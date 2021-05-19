@@ -1,0 +1,11 @@
+{
+  "_template": "gh:cjolowicz/cookiecutter-hypermodern-python",
+  "author": "Yohsuke Fukai",
+  "email": "ysk@yfukai.net",
+  "friendly_name": "M2Stitch",
+  "github_user": "yfukai",
+  "license": "MIT",
+  "package_name": "m2stitch",
+  "project_name": "m2stitch",
+  "version": "0.0.1"
+}

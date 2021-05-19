@@ -1,0 +1,65 @@
+[tool.poetry]
+name = "m2stitch"
+version = "0.0.1"
+description = "M2Stitch"
+authors = ["Yohsuke Fukai <ysk@yfukai.net>"]
+license = "MIT"
+readme = "README.rst"
+homepage = "https://github.com/yfukai/m2stitch"
+repository = "https://github.com/yfukai/m2stitch"
+documentation = "https://m2stitch.readthedocs.io"
+classifiers = [
+    "Programming Language :: Python :: 3.6",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+]
+
+[tool.poetry.urls]
+Changelog = "https://github.com/yfukai/m2stitch/releases"
+
+[tool.poetry.dependencies]
+python = "^3.6.1"
+click = "^7.0"
+
+[tool.poetry.dev-dependencies]
+pytest = "^6.2.3"
+coverage = {extras = ["toml"], version = "^5.4"}
+safety = "^1.10.3"
+mypy = "^0.812"
+typeguard = "^2.12.0"
+xdoctest = {extras = ["colors"], version = "^0.15.4"}
+sphinx = "^3.5.4"
+sphinx-autobuild = "^2021.3.14"
+pre-commit = "^2.12.0"
+flake8 = "^3.9.0"
+black = "^20.8b1"
+flake8-bandit = "^2.1.2"
+flake8-bugbear = "^21.4.3"
+flake8-docstrings = "^1.6.0"
+flake8-rst-docstrings = "^0.0.14"
+pep8-naming = "^0.11.1"
+darglint = "^1.8.0"
+reorder-python-imports = "^2.4.0"
+pre-commit-hooks = "^3.4.0"
+sphinx-rtd-theme = "^0.5.2"
+sphinx-click = "^2.7.1"
+Pygments = "^2.8.1"
+
+[tool.poetry.scripts]
+m2stitch = "m2stitch.__main__:main"
+
+[tool.coverage.paths]
+source = ["src", "*/site-packages"]
+
+[tool.coverage.run]
+branch = true
+source = ["m2stitch"]
+
+[tool.coverage.report]
+show_missing = true
+fail_under = 100
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
