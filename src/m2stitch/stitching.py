@@ -75,7 +75,7 @@ def compute_stitching(images, rows, cols, pou=3, full_output=False):
     grid = filter_by_repeatability(grid, r)
     grid = replace_invalid_translations(grid)
 
-    grid = refine_translations(images,grid, r)
+    grid = refine_translations(images, grid, r)
 
     tree = compute_maximum_spanning_tree(grid)
     grid = compute_final_position(grid, tree)
@@ -83,4 +83,4 @@ def compute_stitching(images, rows, cols, pou=3, full_output=False):
     if full_output:
         return grid
     else:
-        return grid[["row","col","x_pos","y_pos"]]
+        return grid[["row", "col", "x_pos", "y_pos"]]
