@@ -15,4 +15,7 @@ import pytest
 #    """It exits with a status code of zero."""
 #    result = runner.invoke(__main__.main)
 #    assert result.exit_code == 0
-#
+#rowcol_df=pd.read_csv("../tests/data/testimages_rowcol.csv",index_col=0)#
+#rows=rowcol_df["row"].to_list() ; cols=rowcol_df["col"].to_list()
+#testimg=zarr.open("../tests/data/testimages.zarr","r")
+#m2stitch.compute_stitching(testimg,rows,cols)

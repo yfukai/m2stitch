@@ -14,7 +14,7 @@ from .translation_computation import multi_peak_max
 from .translation_computation import pcm
 
 
-def compute_stitching(images, rows, cols, pou):
+def compute_stitching(images, rows, cols, pou=3, full_output=False):
     images = np.array(images)
     assert images.shape[0] == len(rows)
     assert images.shape[0] == len(cols)
@@ -71,13 +71,16 @@ def compute_stitching(images, rows, cols, pou):
     overlap_n = np.clip(overlap_n, pou, 100 - pou)
     overlap_w = np.clip(overlap_w, pou, 100 - pou)
 
-    grid, r = compute_repeatability(grid, overlap_n, overlap_w, pou)
+    grid, r = compute_repeatability(grid, overlap_n, overlap_w, W, H, pou)
     grid = filter_by_repeatability(grid, r)
     grid = replace_invalid_translations(grid)
 
-    grid = refine_translations(grid, r)
+    grid = refine_translations(images,grid, r)
 
     tree = compute_maximum_spanning_tree(grid)
     grid = compute_final_position(grid, tree)
 
-    return grid
+    if full_output:
+        return grid
+    else:
+        return grid[["row","col","x_pos","y_pos"]]
