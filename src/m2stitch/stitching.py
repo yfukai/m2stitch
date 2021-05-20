@@ -14,7 +14,29 @@ from .translation_computation import multi_peak_max
 from .translation_computation import pcm
 
 
-def compute_stitching(images, rows, cols, pou=3, full_output=False):
+def stitch_images(images, rows, cols, pou=3, full_output=False):
+    """
+    compute image positions for stitching
+
+    Parameters
+    ---------
+    images : np.ndarray
+        the images to stitch. 
+
+    rows : list
+        the row indices of the images 
+
+    rows : list
+        the row indices of the images 
+    rows : list
+
+    Returns
+    -------
+    PCM : np.ndarray
+        the peak correlation matrix
+
+    """
+
     images = np.array(images)
     assert images.shape[0] == len(rows)
     assert images.shape[0] == len(cols)
@@ -80,7 +102,25 @@ def compute_stitching(images, rows, cols, pou=3, full_output=False):
     tree = compute_maximum_spanning_tree(grid)
     grid = compute_final_position(grid, tree)
 
+    prop_dict = {
+        "W":W,
+        "H":H,
+        "overlap_north":overlap_n,
+        "overlap_west":overlap_w,
+        "overlap_north_results":{
+            "prob_uniform":prob_uniform_n,
+            "mu":mu_n,
+            "sigma":sigma_n,
+        },
+        "overlap_west_results":{
+            "prob_uniform":prob_uniform_w,
+            "mu":mu_w,
+            "sigma":sigma_w,
+        },
+        "repeatability" : r
+    }
     if full_output:
-        return grid
+        return grid, prop_dict
     else:
-        return grid[["row", "col", "x_pos", "y_pos"]]
+        return grid[["row", "col", "x_pos", "y_pos"]], prop_dict
+
