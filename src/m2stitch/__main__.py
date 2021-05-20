@@ -1,5 +1,6 @@
 """Command-line interface."""
 import click
+from . import compute_stitching
 
 
 @click.command()
