@@ -1,6 +1,6 @@
 """Test cases for the __main__ module."""
-from os import path
 import inspect
+from os import path
 
 import numpy as np
 import pandas as pd

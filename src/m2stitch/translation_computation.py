@@ -74,10 +74,6 @@ def ncc(image1, image2):
         the normalized cross correlation
 
     """
-    if image1 is None:
-        from IPython.core.debugger import Pdb
-
-        Pdb().set_trace()
     assert image1.ndim == 2
     assert image2.ndim == 2
     assert np.array_equal(image1.shape, image2.shape)
@@ -91,8 +87,7 @@ def ncc(image1, image2):
 def extract_overlap_subregion(image, x, y):
     W = image.shape[0]
     H = image.shape[1]
-    if (np.abs(x) >= W) or (np.abs(y) >= H):
-        return None
+    assert (np.abs(x) < W) and (np.abs(y) < H)
     xstart = max(0, min(x, W))
     xend = max(0, min(x + W, W))
     ystart = max(0, min(y, H))

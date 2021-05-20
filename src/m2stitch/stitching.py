@@ -21,19 +21,28 @@ def stitch_images(images, rows, cols, pou=3, full_output=False):
     Parameters
     ---------
     images : np.ndarray
-        the images to stitch. 
+        the images to stitch.
 
     rows : list
-        the row indices of the images 
+        the row indices of the images
 
-    rows : list
-        the row indices of the images 
-    rows : list
+    cols : list
+        the col indices of the images
+
+    pou : float, default 3
+        the "percent overlap uncertainty" parameter
+
+    full_output : bool, default False
+        if True, returns the full computation result in the pd.DataFrame
 
     Returns
     -------
-    PCM : np.ndarray
-        the peak correlation matrix
+    grid : pd.DataFrame
+        the result dataframe with the rows "x_pos" and "y_pos" whose values are
+        the absolute positions.
+
+    prop_dict : dict
+        the dict of estimated parameters. (to be documented)
 
     """
 
@@ -103,24 +112,23 @@ def stitch_images(images, rows, cols, pou=3, full_output=False):
     grid = compute_final_position(grid, tree)
 
     prop_dict = {
-        "W":W,
-        "H":H,
-        "overlap_north":overlap_n,
-        "overlap_west":overlap_w,
-        "overlap_north_results":{
-            "prob_uniform":prob_uniform_n,
-            "mu":mu_n,
-            "sigma":sigma_n,
+        "W": W,
+        "H": H,
+        "overlap_north": overlap_n,
+        "overlap_west": overlap_w,
+        "overlap_north_results": {
+            "prob_uniform": prob_uniform_n,
+            "mu": mu_n,
+            "sigma": sigma_n,
         },
-        "overlap_west_results":{
-            "prob_uniform":prob_uniform_w,
-            "mu":mu_w,
-            "sigma":sigma_w,
+        "overlap_west_results": {
+            "prob_uniform": prob_uniform_w,
+            "mu": mu_w,
+            "sigma": sigma_w,
         },
-        "repeatability" : r
+        "repeatability": r,
     }
     if full_output:
         return grid, prop_dict
     else:
         return grid[["row", "col", "x_pos", "y_pos"]], prop_dict
-
