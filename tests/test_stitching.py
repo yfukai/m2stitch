@@ -12,7 +12,7 @@ from m2stitch import compute_stitching
 
 @pytest.fixture
 def test_image_path(shared_datadir):
-    testimages = zarr.open(path.join(shared_datadir, "testimages.zarr"))
+    testimages = zarr.open(path.join(shared_datadir, "testimages.zarr"),mode="r")
     props = pd.read_csv(path.join(shared_datadir, "testimages_props.csv"), index_col=0)
     assert np.array_equal(props.index, np.arange(testimages.shape[0]))
     return (testimages, props)
