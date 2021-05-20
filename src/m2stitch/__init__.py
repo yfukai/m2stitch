@@ -8,6 +8,6 @@ A MIST-inspired unofficial stitching imprementation in Python for microscope ima
 __author__ = """Yohsuke T. Fukai"""
 __email__ = "ysk@yfukai.net"
 
-from .stitching import compute_stitching
+from .stitching import stitch_images
 
-__all__ = ["compute_stitching"]
+__all__ = ["stitch_images"]

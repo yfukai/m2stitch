@@ -15,14 +15,6 @@ optional = false
 python-versions = "*"
 
 [[package]]
-name = "asciitree"
-version = "0.3.3"
-description = "Draws ASCII trees."
-category = "dev"
-optional = false
-python-versions = "*"
-
-[[package]]
 name = "aspy.refactor-imports"
 version = "2.2.0"
 description = "Utilities for refactoring imports in python-like syntax."
@@ -212,17 +204,6 @@ toml = "*"
 
 [package.extras]
 pipenv = ["pipenv"]
-
-[[package]]
-name = "fasteners"
-version = "0.16"
-description = "A python package that provides useful locks."
-category = "dev"
-optional = false
-python-versions = "*"
-
-[package.dependencies]
-six = "*"
 
 [[package]]
 name = "filelock"
@@ -481,20 +462,6 @@ description = "Node.js virtual environment builder"
 category = "dev"
 optional = false
 python-versions = "*"
-
-[[package]]
-name = "numcodecs"
-version = "0.7.3"
-description = "A Python package providing buffer compression and transformation codecs for use in data storage and communication applications."
-category = "dev"
-optional = false
-python-versions = ">=3.6, <4"
-
-[package.dependencies]
-numpy = ">=1.7"
-
-[package.extras]
-msgpack = ["msgpack"]
 
 [[package]]
 name = "numpy"
@@ -1103,23 +1070,6 @@ optional = ["pygments", "colorama", "nbformat", "nbconvert", "jupyter-client", "
 tests = ["pytest", "pytest-cov", "codecov", "scikit-build", "cmake", "ninja", "pybind11", "nbformat", "nbconvert", "jupyter-client", "ipython", "ipykernel"]
 
 [[package]]
-name = "zarr"
-version = "2.8.2"
-description = "An implementation of chunked, compressed, N-dimensional arrays for Python."
-category = "dev"
-optional = false
-python-versions = ">=3.6, <4"
-
-[package.dependencies]
-asciitree = "*"
-fasteners = "*"
-numcodecs = ">=0.6.4"
-numpy = ">=1.7"
-
-[package.extras]
-jupyter = ["notebook", "ipytree"]
-
-[[package]]
 name = "zipp"
 version = "3.4.1"
 description = "Backport of pathlib-compatible object wrapper for zip files"
@@ -1134,7 +1084,7 @@ testing = ["pytest (>=4.6)", "pytest-checkdocs (>=1.2.3)", "pytest-flake8", "pyt
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.7.1,<3.10"
-content-hash = "2e26256ab87c8599d1b474da65c1738dd60edda4be3eaea453206e40e865da94"
+content-hash = "5eb6e462e8c43286b48d36ff9f51f9a4f84f67f3efd2da0716b3c79acc0d71fc"
 
 [metadata.files]
 alabaster = [
@@ -1144,9 +1094,6 @@ alabaster = [
 appdirs = [
     {file = "appdirs-1.4.4-py2.py3-none-any.whl", hash = "sha256:a841dacd6b99318a741b166adb07e19ee71a274450e68237b4650ca1055ab128"},
     {file = "appdirs-1.4.4.tar.gz", hash = "sha256:7d5d0167b2b1ba821647616af46a749d1c653740dd0d2415100fe26e27afdf41"},
-]
-asciitree = [
-    {file = "asciitree-0.3.3.tar.gz", hash = "sha256:4aa4b9b649f85e3fcb343363d97564aa1fb62e249677f2e18a96765145cc0f6e"},
 ]
 "aspy.refactor-imports" = [
     {file = "aspy.refactor_imports-2.2.0-py2.py3-none-any.whl", hash = "sha256:7a18039d2e8be6b02b4791ce98891deb46b459b575c52ed35ab818c4eaa0c098"},
@@ -1268,10 +1215,6 @@ docutils = [
 dparse = [
     {file = "dparse-0.5.1-py3-none-any.whl", hash = "sha256:e953a25e44ebb60a5c6efc2add4420c177f1d8404509da88da9729202f306994"},
     {file = "dparse-0.5.1.tar.gz", hash = "sha256:a1b5f169102e1c894f9a7d5ccf6f9402a836a5d24be80a986c7ce9eaed78f367"},
-]
-fasteners = [
-    {file = "fasteners-0.16-py2.py3-none-any.whl", hash = "sha256:74b6847e0a6bb3b56c8511af8e24c40e4cf7a774dfff5b251c260ed338096a4b"},
-    {file = "fasteners-0.16.tar.gz", hash = "sha256:c995d8c26b017c5d6a6de9ad29a0f9cdd57de61ae1113d28fac26622b06a0933"},
 ]
 filelock = [
     {file = "filelock-3.0.12-py3-none-any.whl", hash = "sha256:929b7d63ec5b7d6b71b0fa5ac14e030b3f70b75747cef1b10da9b879fef15836"},
@@ -1409,37 +1352,6 @@ networkx = [
 nodeenv = [
     {file = "nodeenv-1.6.0-py2.py3-none-any.whl", hash = "sha256:621e6b7076565ddcacd2db0294c0381e01fd28945ab36bcf00f41c5daf63bef7"},
     {file = "nodeenv-1.6.0.tar.gz", hash = "sha256:3ef13ff90291ba2a4a7a4ff9a979b63ffdd00a464dbe04acf0ea6471517a4c2b"},
-]
-numcodecs = [
-    {file = "numcodecs-0.7.3-cp36-cp36m-macosx_10_9_x86_64.whl", hash = "sha256:211dce8ac804280bf296b1eb70e991c43d6ab1ce4ce96d7f64844262032a3e62"},
-    {file = "numcodecs-0.7.3-cp36-cp36m-manylinux1_i686.whl", hash = "sha256:d4d6bd3aedaaf1b7d6b594977e07315d0dab4b4ffb9ac8ef58a370931833149e"},
-    {file = "numcodecs-0.7.3-cp36-cp36m-manylinux1_x86_64.whl", hash = "sha256:aefc8821a93fcc777c17643038793b240273a3afcf284691fbdc32640ad87b02"},
-    {file = "numcodecs-0.7.3-cp36-cp36m-manylinux2010_i686.whl", hash = "sha256:b997e29ddd19c7b49e91a174105397985183c67afdaf05c82008f9ad0388ef2f"},
-    {file = "numcodecs-0.7.3-cp36-cp36m-manylinux2010_x86_64.whl", hash = "sha256:7e9faba532f12ebdb1dc658e707deb4c66137c638b07d8161031373ec05ca398"},
-    {file = "numcodecs-0.7.3-cp36-cp36m-win32.whl", hash = "sha256:1f9a22486eeaca99c711f810f08b6af7434845f0d823194d2c10beabe45178d6"},
-    {file = "numcodecs-0.7.3-cp36-cp36m-win_amd64.whl", hash = "sha256:e1873ef81099970ad74d73820314f7bf5b3d217c84f3d4ae3147d50c258e3710"},
-    {file = "numcodecs-0.7.3-cp37-cp37m-macosx_10_9_x86_64.whl", hash = "sha256:97f879876249979ad2e501190f2c24088acfd21a0e2a2e4aa86cb0595ba98a81"},
-    {file = "numcodecs-0.7.3-cp37-cp37m-manylinux1_i686.whl", hash = "sha256:ca37cfd2791b4ea5d975fac28967f4f3bf270afe3f8e3a0176673d69335a7fe9"},
-    {file = "numcodecs-0.7.3-cp37-cp37m-manylinux1_x86_64.whl", hash = "sha256:5754e914d4455658600577658f0a27dba7f78ae338b19fd71d80bc5e42a738dc"},
-    {file = "numcodecs-0.7.3-cp37-cp37m-manylinux2010_i686.whl", hash = "sha256:47c9e7c62c90f39d8a307acba39d85b92945fc0b9ec5f22a926d008793f575cd"},
-    {file = "numcodecs-0.7.3-cp37-cp37m-manylinux2010_x86_64.whl", hash = "sha256:6336fb0606f724cee96660048f98411ecda7844aac68c61c2869b7e9d9b3719e"},
-    {file = "numcodecs-0.7.3-cp37-cp37m-win32.whl", hash = "sha256:1e1f4ba0cc4e4be41454d3574d85e732bca1f9dadf7bd3ced7a7051b9aaaa51a"},
-    {file = "numcodecs-0.7.3-cp37-cp37m-win_amd64.whl", hash = "sha256:37d7a58555b941e4febdf722ba69c108fbf3795ff1a1c48dc3bfd40de47225de"},
-    {file = "numcodecs-0.7.3-cp38-cp38-macosx_10_9_x86_64.whl", hash = "sha256:b93b56a5913365ab6e149384bdb061e526bebe12147cbeb9497b21467f0967a6"},
-    {file = "numcodecs-0.7.3-cp38-cp38-manylinux1_i686.whl", hash = "sha256:9e3ca62ad65e22eb4e1c83152e9a0eea48b41ac378591a38970963de0670dd78"},
-    {file = "numcodecs-0.7.3-cp38-cp38-manylinux1_x86_64.whl", hash = "sha256:6421c4369a58ac448a8077b8f9ba3b5cbec2e27fad3a330fa5718b472d79040b"},
-    {file = "numcodecs-0.7.3-cp38-cp38-manylinux2010_i686.whl", hash = "sha256:9062964ccdec50f950bd30e92d3e9a85b84748411d4c30fac701412d1eb8c2d3"},
-    {file = "numcodecs-0.7.3-cp38-cp38-manylinux2010_x86_64.whl", hash = "sha256:6c57795c96874bbb479834e87a62c10c0fcd64957acdbde72e8c0a8a39fb6d39"},
-    {file = "numcodecs-0.7.3-cp38-cp38-win32.whl", hash = "sha256:f2d7c8395673f57ec8edc95eb9820604f34a90d6e5d29a1da7e86c8b00df5726"},
-    {file = "numcodecs-0.7.3-cp38-cp38-win_amd64.whl", hash = "sha256:5eec04dd2d59725ef61c139fe3ec96085374b8f59a9c8de9dcf4e8cbde6bd179"},
-    {file = "numcodecs-0.7.3-cp39-cp39-macosx_10_9_x86_64.whl", hash = "sha256:e335a33f269e0817eacabd710a9ea2de2d7da3bb9d89f049b5d1d594b7a21216"},
-    {file = "numcodecs-0.7.3-cp39-cp39-manylinux1_i686.whl", hash = "sha256:bd6152f95fedda73574045ce36d98002992b7df2bbc5b2775460d517c892b2f1"},
-    {file = "numcodecs-0.7.3-cp39-cp39-manylinux1_x86_64.whl", hash = "sha256:6a54e3335ac08d06288506ca4f0ff56608b5df76288cb317a42efe1ac646e834"},
-    {file = "numcodecs-0.7.3-cp39-cp39-manylinux2010_i686.whl", hash = "sha256:48b33118374e6f749abbb940bdef711169f9e9055c5bb532cc322de68767e01d"},
-    {file = "numcodecs-0.7.3-cp39-cp39-manylinux2010_x86_64.whl", hash = "sha256:ccb2d808f908db05f192287f8de84519e8640e47ad8cd16f74fb3768bb085994"},
-    {file = "numcodecs-0.7.3-cp39-cp39-win32.whl", hash = "sha256:89c56add9b1c3dba3b5ce4dc1bfc02629916b720e68b0d6d43bedfef90326fa6"},
-    {file = "numcodecs-0.7.3-cp39-cp39-win_amd64.whl", hash = "sha256:6d0f341a6810f9428221164a58b01b08bd5e847aba38b3a431d6b6f44696808c"},
-    {file = "numcodecs-0.7.3.tar.gz", hash = "sha256:022b12ad83eb623ec53f154859d49f6ec43b15c36052fa864eaf2d9ee786dd85"},
 ]
 numpy = [
     {file = "numpy-1.20.3-cp37-cp37m-macosx_10_9_x86_64.whl", hash = "sha256:70eb5808127284c4e5c9e836208e09d685a7978b6a216db85960b1a112eeace8"},
@@ -1860,10 +1772,6 @@ xdoctest = [
     {file = "xdoctest-0.15.4-py2.py3-none-any.whl", hash = "sha256:4b91eb67e45e51a254ff9370adb72a0c82b08289844c95cfd3a1186d7ec4f694"},
     {file = "xdoctest-0.15.4-py3-none-any.whl", hash = "sha256:33d4a12cf70da245ca3f71be9ef03e0615fa862826bf6a08e8f025ce693e496d"},
     {file = "xdoctest-0.15.4.tar.gz", hash = "sha256:ef1f93d2147988d3cb6f35c026ec32aca971923f86945a775f61e2f8de8505d1"},
-]
-zarr = [
-    {file = "zarr-2.8.2-py3-none-any.whl", hash = "sha256:0b72b620dd3a5a315dcfe6c11c987a671e596c97129166cb2affdd9ba5ced7bb"},
-    {file = "zarr-2.8.2.tar.gz", hash = "sha256:d86774190552ba1510106efc29a4221a124f72b6a834b5bfc58279bc73a8e05e"},
 ]
 zipp = [
     {file = "zipp-3.4.1-py3-none-any.whl", hash = "sha256:51cb66cc54621609dd593d1787f286ee42a5c0adbb4b29abea5a63edc3e03098"},
