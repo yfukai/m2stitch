@@ -6,8 +6,8 @@ Reference
     :backlinks: none
 
 
-m2stitch.__main__
+m2stitch.stitching
 -----------------
 
-.. automodule:: m2stitch.__main__
+.. automodule:: m2stitch.stitching
    :members:
