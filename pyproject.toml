@@ -57,6 +57,7 @@ pre-commit-hooks = "^3.4.0"
 sphinx-rtd-theme = "^0.5.2"
 sphinx-click = "^3.0.0"
 Pygments = "^2.8.1"
+data-science-types = "^0.2.23"
 
 [tool.poetry.scripts]
 m2stitch = "m2stitch.__main__:main"

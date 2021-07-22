@@ -183,6 +183,17 @@ optional = false
 python-versions = ">=3.6,<4.0"
 
 [[package]]
+name = "data-science-types"
+version = "0.2.23"
+description = "Type stubs for Python machine learning libraries"
+category = "dev"
+optional = false
+python-versions = ">=3.6"
+
+[package.extras]
+dev = ["black", "flake8", "flake8-pyi", "matplotlib", "mypy (==0.770)", "numpy", "pandas", "pytest"]
+
+[[package]]
 name = "distlib"
 version = "0.3.1"
 description = "Distribution utilities"
@@ -1139,7 +1150,7 @@ testing = ["pytest (>=4.6)", "pytest-checkdocs (>=1.2.3)", "pytest-flake8", "pyt
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.7.1,<3.10"
-content-hash = "d0ca677251540d4af22a4d89899464bc969311c8af3aa0b9302bf2e1fee73d3c"
+content-hash = "f0d545a4db6744ed6d580a7c41addbf1b885678cc053638d79b9ed2e42bced29"
 
 [metadata.files]
 alabaster = [
@@ -1259,6 +1270,10 @@ cycler = [
 darglint = [
     {file = "darglint-1.8.0-py3-none-any.whl", hash = "sha256:ac6797bcc918cd8d8f14c168a4a364f54e1aeb4ced59db58e7e4c6dfec2fe15c"},
     {file = "darglint-1.8.0.tar.gz", hash = "sha256:aa605ef47817a6d14797d32b390466edab621768ea4ca5cc0f3c54f6d8dcaec8"},
+]
+data-science-types = [
+    {file = "data-science-types-0.2.23.tar.gz", hash = "sha256:8096b9a35a8a187bf9a122b4707c97de841d810744690ee2a4ac30c6462e0d16"},
+    {file = "data_science_types-0.2.23-py3-none-any.whl", hash = "sha256:bca319abc0e53a0316f9fcb887937e942477cb9e5fc63c8581e0b0438903b977"},
 ]
 distlib = [
     {file = "distlib-0.3.1-py2.py3-none-any.whl", hash = "sha256:8c09de2c67b3e7deef7184574fc060ab8a793e7adbb183d942c389c8b13c52fb"},

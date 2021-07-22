@@ -7,6 +7,8 @@ import numpy.typing as npt
 import pandas as pd
 from tqdm import tqdm
 
+from m2stitch.typing_utils import NumArray
+
 from .translation_computation import extract_overlap_subregion
 from .translation_computation import ncc
 
@@ -38,7 +40,7 @@ def find_local_max_integer_constrained(func:Callable[[Sequence[float]],float], i
     return x, value
 
 
-def refine_translations(images :Sequence[np.ndarray], grid :pd.DataFrame, r : float) -> pd.DataFrame:
+def refine_translations(images :Sequence[NumArray], grid :pd.DataFrame, r : float) -> pd.DataFrame:
     for direction in ["north", "west"]: 
         for i2, g in tqdm(grid.iterrows(), total=len(grid)):
             i1 = g[direction]
