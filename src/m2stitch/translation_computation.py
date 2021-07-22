@@ -1,9 +1,11 @@
 import itertools
+from typing import Tuple
 
 import numpy as np
+import numpy.typing as npt
 
 
-def pcm(image1, image2):
+def pcm(image1 : npt.NDArray, image2 : npt.NDArray) -> npt.NDArray:
     """
     compute peak correlation matrix for two images
 
@@ -30,7 +32,7 @@ def pcm(image1, image2):
     return np.fft.ifft2(FC / np.abs(FC)).real
 
 
-def multi_peak_max(PCM, n=2):
+def multi_peak_max(PCM : npt.NDArray, n : int=2) -> Tuple[npt.NDArray,npt.NDArray,npt.NDArray]:
     """
     find the first to n th largest peaks in PCM
 
@@ -56,7 +58,7 @@ def multi_peak_max(PCM, n=2):
     return row[-n:][::-1], col[-n:][::-1], PCM[row[-n:][::-1], col[-n:][::-1]]
 
 
-def ncc(image1, image2):
+def ncc(image1 : npt.NDArray , image2: npt.NDArray) -> float:
     """
     compute the normalized cross correlation for two images
 
@@ -74,6 +76,7 @@ def ncc(image1, image2):
         the normalized cross correlation
 
     """
+
     assert image1.ndim == 2
     assert image2.ndim == 2
     assert np.array_equal(image1.shape, image2.shape)
@@ -84,7 +87,26 @@ def ncc(image1, image2):
     return n / d
 
 
-def extract_overlap_subregion(image, x, y):
+def extract_overlap_subregion(image : npt.NDArray, x : int, y:int) -> npt.NDArray:
+    """
+    extract the overlapping subregion of the image 
+
+    Parameters
+    ---------
+    image : np.ndarray
+        the image (the dimension must be 2)
+    x : int
+        the x position
+    y : int
+        the y position
+
+    Returns
+    -------
+    subimage : np.ndarray
+        the extracted subimage
+
+    """
+    
     W = image.shape[0]
     H = image.shape[1]
     assert (np.abs(x) < W) and (np.abs(y) < H)
@@ -95,7 +117,32 @@ def extract_overlap_subregion(image, x, y):
     return image[xstart:xend, ystart:yend]
 
 
-def interpret_translation(image1, image2, xin, yin):
+def interpret_translation(image1:npt.NDArray, image2:npt.NDArray, xin:int, yin:int) -> Tuple[float, int, int]:
+    """
+    interpret the translation to find the real translation with heighest ncc
+
+    Parameters
+    ---------
+    image1 : np.ndarray
+        the first image (the dimension must be 2)
+    image1 : np.ndarray
+        the second image (the dimension must be 2)
+    xin : int
+        the x position estimated by PCM
+    yin : int
+        the y position estimated by PCM
+
+    Returns
+    -------
+    _ncc : float
+        the highest ncc
+    x : int
+        the selected x position
+    y : int
+        the selected y position
+
+    """
+
     assert image1.ndim == 2
     assert image2.ndim == 2
     assert np.array_equal(image1.shape, image2.shape)

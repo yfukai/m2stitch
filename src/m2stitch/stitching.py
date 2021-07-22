@@ -1,3 +1,4 @@
+from typing import Tuple
 import numpy as np
 import pandas as pd
 from tqdm import tqdm
@@ -14,7 +15,7 @@ from .translation_computation import multi_peak_max
 from .translation_computation import pcm
 
 
-def stitch_images(images, rows, cols, pou=3, full_output=False):
+def stitch_images(images: np.ndarray, rows : list, cols : list, pou:float=3, full_output:bool=False) -> Tuple[pd.DataFrame,dict]:
     """
     compute image positions for stitching
 

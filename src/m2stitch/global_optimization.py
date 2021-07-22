@@ -3,7 +3,13 @@ import numpy as np
 import pandas as pd
 
 
-def compute_maximum_spanning_tree(grid):
+def compute_maximum_spanning_tree(grid:pd.DataFrame) -> nx.Graph:
+    """
+    compute the maximum spanning tree to solve the overconstraint problem of 
+    grid position determination
+    
+
+    """
     connection_graph = nx.Graph()
     for i, g in grid.iterrows():
         for direction in ["north", "west"]:
@@ -24,7 +30,12 @@ def compute_maximum_spanning_tree(grid):
     return nx.maximum_spanning_tree(connection_graph)
 
 
-def compute_final_position(grid, tree, source_index=0):
+def compute_final_position(grid : pd.DataFrame, tree : nx.Graph, source_index : int=0) -> pd.DataFrame:
+    """
+    compute the final tile positions by the computed maximum spanning tree
+    
+
+    """
     grid.loc[source_index, "x_pos"] = 0
     grid.loc[source_index, "y_pos"] = 0
 

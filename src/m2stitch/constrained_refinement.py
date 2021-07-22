@@ -1,6 +1,9 @@
 import itertools
+from typing import Sequence, Tuple
+from collections.abc import Callable
 
 import numpy as np
+import numpy.typing as npt
 import pandas as pd
 from tqdm import tqdm
 
@@ -8,7 +11,8 @@ from .translation_computation import extract_overlap_subregion
 from .translation_computation import ncc
 
 
-def find_local_max_integer_constrained(func, init_x, limits, max_iter=100):
+def find_local_max_integer_constrained(func:Callable[[Sequence[float]],float], init_x : Sequence[float], 
+                                       limits : Sequence[float], max_iter : int=100) -> Tuple[Sequence[float],float]:
     dim = len(init_x)
     assert len(limits) == dim
     limits = np.array(limits)
@@ -34,8 +38,8 @@ def find_local_max_integer_constrained(func, init_x, limits, max_iter=100):
     return x, value
 
 
-def refine_translations(images, grid, r):
-    for direction in ["north", "west"]:
+def refine_translations(images :Sequence[np.ndarray], grid :pd.DataFrame, r : float) -> pd.DataFrame:
+    for direction in ["north", "west"]: 
         for i2, g in tqdm(grid.iterrows(), total=len(grid)):
             i1 = g[direction]
             if pd.isna(i1):
