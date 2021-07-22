@@ -54,7 +54,8 @@ def compute_image_overlap(
                     return model["x"]
                 elif model["fun"] < best_model["fun"]:
                     best_model = model
-    return tuple(best_model["x"])
+    best_model_params : Tuple[float,float,float] = tuple(best_model["x"])
+    return best_model_params
 
 
 def filter_by_overlap_and_correlation(T:pd.Series, ncc : pd.Series, overlap : float, size : int, pou:float=3) -> pd.Series:
@@ -68,7 +69,7 @@ def filter_outliers(T : pd.Series, isvalid:pd.Series, w:float=1.5) -> pd.Series:
     return isvalid & T.between(q1 - w * iqd, q3 + w * iqd)
 
 
-def compute_repeatability(grid : pd.DataFrame, overlap_n:pd.Series, overlap_w : pd.Series, W : int, H : int, pou : float) -> Tuple[pd.DataFrame,float]:
+def compute_repeatability(grid : pd.DataFrame, overlap_n: float, overlap_w : float, W : int, H : int, pou : float) -> Tuple[pd.DataFrame,float]:
     grid["north_valid1"] = filter_by_overlap_and_correlation(
         grid["north_y_first"], grid["north_ncc_first"], overlap_n, H, pou
     )
@@ -125,7 +126,7 @@ def replace_invalid_translations(grid:pd.DataFrame) -> pd.DataFrame:
     for direction in ["north", "west"]:
         for key in ["x", "y", "ncc"]:
             isvalid = grid[f"{direction}_valid3"]
-            grid.loc[isvalid, f"{direction}_{key}_second"] = grid.loc[
+            grid.loc[isvalid][f"{direction}_{key}_second"] = grid.loc[
                 isvalid, f"{direction}_{key}_first"
             ]
     for direction, rowcol in zip(["north", "west"], ["row", "col"]):

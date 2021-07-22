@@ -7,17 +7,19 @@ import numpy.typing as npt
 import pandas as pd
 from tqdm import tqdm
 
-from m2stitch.typing_utils import NumArray
+from m2stitch.typing_utils import FloatArray, NumArray
 
 from .translation_computation import extract_overlap_subregion
 from .translation_computation import ncc
 
 
-def find_local_max_integer_constrained(func:Callable[[Sequence[float]],float], init_x : Sequence[float], 
-                                       limits : Sequence[float], max_iter : int=100) -> Tuple[Sequence[float],float]:
-    dim = len(init_x)
-    assert len(limits) == dim
+def find_local_max_integer_constrained(func:Callable[[FloatArray],float], 
+                                       init_x : FloatArray , 
+                                       limits : FloatArray, max_iter : int=100) -> Tuple[FloatArray,float]:
+    init_x = np.array(init_x)
     limits = np.array(limits)
+    dim = init_x.shape[0]
+    assert limits.shape[0] == dim
     value = func(init_x)
     x = init_x
     for i in range(max_iter):
@@ -40,7 +42,7 @@ def find_local_max_integer_constrained(func:Callable[[Sequence[float]],float], i
     return x, value
 
 
-def refine_translations(images :Sequence[NumArray], grid :pd.DataFrame, r : float) -> pd.DataFrame:
+def refine_translations(images : NumArray, grid :pd.DataFrame, r : float) -> pd.DataFrame:
     for direction in ["north", "west"]: 
         for i2, g in tqdm(grid.iterrows(), total=len(grid)):
             i1 = g[direction]
@@ -64,7 +66,7 @@ def refine_translations(images :Sequence[NumArray], grid :pd.DataFrame, r : floa
                 [init_values[1] - r, init_values[1] + r],
             ]
             values, ncc_value = find_local_max_integer_constrained(
-                overlap_ncc, init_values, limits
+                overlap_ncc, np.array(init_values), np.array(limits)
             )
             grid.loc[i2, f"{direction}_x"] = values[0]
             grid.loc[i2, f"{direction}_y"] = values[1]
