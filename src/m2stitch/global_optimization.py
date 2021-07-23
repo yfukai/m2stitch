@@ -21,7 +21,6 @@ def compute_maximum_spanning_tree(grid: pd.DataFrame) -> nx.Graph:
         the result spanning tree
     """
 
-
     connection_graph = nx.Graph()
     for i, g in grid.iterrows():
         for direction in ["north", "west"]:
@@ -62,7 +61,6 @@ def compute_final_position(
         the result dataframe for the grid position, with columns "{x|y}_pos"
 
     """
-
 
     grid.loc[source_index, "x_pos"] = 0
     grid.loc[source_index, "y_pos"] = 0

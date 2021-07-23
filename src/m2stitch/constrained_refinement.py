@@ -74,7 +74,7 @@ def refine_translations(images: NumArray, grid: pd.DataFrame, r: Float) -> pd.Da
     Parameters
     ----------
     images : NumArray
-        the tile images 
+        the tile images
     grid : pd.DataFrame
         the dataframe for the grid position, with columns "{north|west}_{x|y}_second"
     r : Float
@@ -83,7 +83,7 @@ def refine_translations(images: NumArray, grid: pd.DataFrame, r: Float) -> pd.Da
     Returns
     -------
     grid : pd.DataFrame
-        the refined grid position, with columns "{north|west}_{x|y|ncc}" 
+        the refined grid position, with columns "{north|west}_{x|y|ncc}"
     """
     for direction in ["north", "west"]:
         for i2, g in tqdm(grid.iterrows(), total=len(grid)):
