@@ -193,9 +193,9 @@ def compute_repeatability(
     overlap_w : Float
         the estimated overlap for west direction
     W : Int
-        the width of the height images 
+        the width of the height images
     H : Int
-        the width of the tile images 
+        the width of the tile images
     pou : Float
         the percentile margin for error, by default 3
 
@@ -278,7 +278,8 @@ def replace_invalid_translations(grid: pd.DataFrame) -> pd.DataFrame:
     Parameters
     ----------
     grid : pd.DataFrame
-        the dataframe for the grid position, with columns "{north|west}_{x|y}_second" and "{north|west}_valid3"
+        the dataframe for the grid position, 
+        with columns "{north|west}_{x|y}_second" and "{north|west}_valid3"
 
     Returns
     -------

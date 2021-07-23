@@ -28,7 +28,7 @@ def stitch_images(
     pou: Float = 3,
     full_output: bool = False,
 ) -> Tuple[pd.DataFrame, dict]:
-    """compute image positions for stitching.
+    """Compute image positions for stitching.
 
     Parameters
     ---------

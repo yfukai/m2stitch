@@ -40,7 +40,6 @@ def find_local_max_integer_constrained(
     val : Float
         the optimized value
     """
-
     init_x = np.array(init_x)
     limits = np.array(limits)
     dim = init_x.shape[0]

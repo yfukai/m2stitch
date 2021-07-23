@@ -6,20 +6,19 @@ from ._typing_utils import Int
 
 
 def compute_maximum_spanning_tree(grid: pd.DataFrame) -> nx.Graph:
-    """Compute the maximum spanning tree to solve the overconstraint problem of
-    grid position determination.
+    """Compute the maximum spanning tree to solve the overconstraint problem of grid position determination.
 
     Parameters
     ----------
     grid : pd.DataFrame
-        the dataframe for the grid position, with columns "{north|west}_{x|y|ncc|valid3}"
+        the dataframe for the grid position, 
+        with columns "{north|west}_{x|y|ncc|valid3}"
 
     Returns
     -------
     tree : nx.Graph
         the result spanning tree
     """
-
     connection_graph = nx.Graph()
     for i, g in grid.iterrows():
         for direction in ["north", "west"]:
@@ -59,7 +58,6 @@ def compute_final_position(
     grid : pd.DataFrame
         the result dataframe for the grid position, with columns "{x|y}_pos"
     """
-
     grid.loc[source_index, "x_pos"] = 0
     grid.loc[source_index, "y_pos"] = 0
 

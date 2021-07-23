@@ -11,7 +11,7 @@ from ._typing_utils import NumArray
 
 
 def pcm(image1: NumArray, image2: NumArray) -> FloatArray:
-    """compute peak correlation matrix for two images.
+    """Compute peak correlation matrix for two images.
 
     Parameters
     ---------
@@ -38,7 +38,7 @@ def pcm(image1: NumArray, image2: NumArray) -> FloatArray:
 def multi_peak_max(
     PCM: FloatArray, n: int = 2
 ) -> Tuple[FloatArray, FloatArray, FloatArray]:
-    """find the first to n th largest peaks in PCM.
+    """Find the first to n th largest peaks in PCM.
 
     Parameters
     ---------
@@ -63,7 +63,7 @@ def multi_peak_max(
 
 
 def ncc(image1: NumArray, image2: NumArray) -> Float:
-    """compute the normalized cross correlation for two images.
+    """Compute the normalized cross correlation for two images.
 
     Parameters
     ---------
@@ -78,7 +78,6 @@ def ncc(image1: NumArray, image2: NumArray) -> Float:
     ncc : Float
         the normalized cross correlation
     """
-
     assert image1.ndim == 2
     assert image2.ndim == 2
     assert np.array_equal(image1.shape, image2.shape)
@@ -90,7 +89,7 @@ def ncc(image1: NumArray, image2: NumArray) -> Float:
 
 
 def extract_overlap_subregion(image: NumArray, x: Int, y: Int) -> NumArray:
-    """extract the overlapping subregion of the image.
+    """Extract the overlapping subregion of the image.
 
     Parameters
     ---------
@@ -106,7 +105,6 @@ def extract_overlap_subregion(image: NumArray, x: Int, y: Int) -> NumArray:
     subimage : np.ndarray
         the extracted subimage
     """
-
     W = image.shape[0]
     H = image.shape[1]
     assert (np.abs(x) < W) and (np.abs(y) < H)
@@ -120,14 +118,14 @@ def extract_overlap_subregion(image: NumArray, x: Int, y: Int) -> NumArray:
 def interpret_translation(
     image1: NumArray, image2: npt.NDArray, xin: Int, yin: Int
 ) -> Tuple[float, int, int]:
-    """interpret the translation to find the real translation with heighest
+    """Interpret the translation to find the real translation with heighest
     ncc.
 
     Parameters
     ---------
     image1 : np.ndarray
         the first image (the dimension must be 2)
-    image1 : np.ndarray
+    image2 : np.ndarray
         the second image (the dimension must be 2)
     xin : Int
         the x position estimated by PCM
@@ -143,7 +141,6 @@ def interpret_translation(
     y : Int
         the selected y position
     """
-
     assert image1.ndim == 2
     assert image2.ndim == 2
     assert np.array_equal(image1.shape, image2.shape)
