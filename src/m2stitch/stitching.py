@@ -28,8 +28,7 @@ def stitch_images(
     pou: Float = 3,
     full_output: bool = False,
 ) -> Tuple[pd.DataFrame, dict]:
-    """
-    compute image positions for stitching
+    """compute image positions for stitching.
 
     Parameters
     ---------
@@ -56,7 +55,6 @@ def stitch_images(
 
     prop_dict : dict
         the dict of estimated parameters. (to be documented)
-
     """
 
     images = np.array(images)

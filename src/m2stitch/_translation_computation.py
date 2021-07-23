@@ -11,8 +11,7 @@ from ._typing_utils import NumArray
 
 
 def pcm(image1: NumArray, image2: NumArray) -> FloatArray:
-    """
-    compute peak correlation matrix for two images
+    """compute peak correlation matrix for two images.
 
     Parameters
     ---------
@@ -26,7 +25,6 @@ def pcm(image1: NumArray, image2: NumArray) -> FloatArray:
     -------
     PCM : np.ndarray
         the peak correlation matrix
-
     """
     assert image1.ndim == 2
     assert image2.ndim == 2
@@ -40,8 +38,7 @@ def pcm(image1: NumArray, image2: NumArray) -> FloatArray:
 def multi_peak_max(
     PCM: FloatArray, n: int = 2
 ) -> Tuple[FloatArray, FloatArray, FloatArray]:
-    """
-    find the first to n th largest peaks in PCM
+    """find the first to n th largest peaks in PCM.
 
     Parameters
     ---------
@@ -59,7 +56,6 @@ def multi_peak_max(
         the column indices for the peaks
     vals : np.ndarray
         the values of the peaks
-
     """
     row, col = np.unravel_index(np.argsort(PCM.ravel()), PCM.shape)
     vals = PCM[row[-n:][::-1], col[-n:][::-1]]
@@ -67,8 +63,7 @@ def multi_peak_max(
 
 
 def ncc(image1: NumArray, image2: NumArray) -> Float:
-    """
-    compute the normalized cross correlation for two images
+    """compute the normalized cross correlation for two images.
 
     Parameters
     ---------
@@ -82,7 +77,6 @@ def ncc(image1: NumArray, image2: NumArray) -> Float:
     -------
     ncc : Float
         the normalized cross correlation
-
     """
 
     assert image1.ndim == 2
@@ -96,8 +90,7 @@ def ncc(image1: NumArray, image2: NumArray) -> Float:
 
 
 def extract_overlap_subregion(image: NumArray, x: Int, y: Int) -> NumArray:
-    """
-    extract the overlapping subregion of the image
+    """extract the overlapping subregion of the image.
 
     Parameters
     ---------
@@ -112,7 +105,6 @@ def extract_overlap_subregion(image: NumArray, x: Int, y: Int) -> NumArray:
     -------
     subimage : np.ndarray
         the extracted subimage
-
     """
 
     W = image.shape[0]
@@ -128,8 +120,8 @@ def extract_overlap_subregion(image: NumArray, x: Int, y: Int) -> NumArray:
 def interpret_translation(
     image1: NumArray, image2: npt.NDArray, xin: Int, yin: Int
 ) -> Tuple[float, int, int]:
-    """
-    interpret the translation to find the real translation with heighest ncc
+    """interpret the translation to find the real translation with heighest
+    ncc.
 
     Parameters
     ---------
@@ -150,7 +142,6 @@ def interpret_translation(
         the selected x position
     y : Int
         the selected y position
-
     """
 
     assert image1.ndim == 2

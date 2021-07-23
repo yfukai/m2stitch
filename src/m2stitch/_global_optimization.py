@@ -6,8 +6,7 @@ from ._typing_utils import Int
 
 
 def compute_maximum_spanning_tree(grid: pd.DataFrame) -> nx.Graph:
-    """
-    Compute the maximum spanning tree to solve the overconstraint problem of
+    """Compute the maximum spanning tree to solve the overconstraint problem of
     grid position determination.
 
     Parameters
@@ -44,8 +43,7 @@ def compute_maximum_spanning_tree(grid: pd.DataFrame) -> nx.Graph:
 def compute_final_position(
     grid: pd.DataFrame, tree: nx.Graph, source_index: Int = 0
 ) -> pd.DataFrame:
-    """
-    Compute the final tile positions by the computed maximum spanning tree.
+    """Compute the final tile positions by the computed maximum spanning tree.
 
     Parameters
     ----------
@@ -60,7 +58,6 @@ def compute_final_position(
     -------
     grid : pd.DataFrame
         the result dataframe for the grid position, with columns "{x|y}_pos"
-
     """
 
     grid.loc[source_index, "x_pos"] = 0

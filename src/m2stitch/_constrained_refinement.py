@@ -20,7 +20,7 @@ def find_local_max_integer_constrained(
     limits: FloatArray,
     max_iter: Int = 100,
 ) -> Tuple[FloatArray, Float]:
-    """Find local maxima of a function with integer steps
+    """Find local maxima of a function with integer steps.
 
     Parameters
     ----------
@@ -39,7 +39,6 @@ def find_local_max_integer_constrained(
         the optimized parameters
     val : Float
         the optimized value
-
     """
 
     init_x = np.array(init_x)
