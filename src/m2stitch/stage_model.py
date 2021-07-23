@@ -5,8 +5,10 @@ import numpy as np
 import pandas as pd
 from scipy.optimize import minimize
 
+from .typing_utils import Int, Float
 
-def calc_liklihood(prob_uniform: float, mu: float, sigma: float, t: float) -> float:
+
+def calc_liklihood(prob_uniform: Float, mu: Float, sigma: Float, t: Float) -> float:
     t2 = -((t - mu) ** 2) / (2 * sigma ** 2)
     norm_liklihood = 1.0 / (np.sqrt(2 * np.pi) * sigma) * np.exp(t2)
     uniform_liklihood = 1 / 100.0
@@ -24,10 +26,10 @@ def compute_inv_liklihood(params: Tuple[float, float, float], T: list) -> float:
 def compute_image_overlap(
     grid: pd.DataFrame,
     direction: str,
-    W: int,
-    H: int,
-    max_stall_count: int = 100,
-    prob_uniform_threshold: float = 90,
+    W: Int,
+    H: Int,
+    max_stall_count: Int= 100,
+    prob_uniform_threshold: Float = 90,
 ) -> Tuple[float, float, float]:
     if direction == "north":
         T = grid["north_y_first"].values / H * 100
@@ -64,20 +66,20 @@ def compute_image_overlap(
 
 
 def filter_by_overlap_and_correlation(
-    T: pd.Series, ncc: pd.Series, overlap: float, size: int, pou: float = 3
+    T: pd.Series, ncc: pd.Series, overlap: Float, size: Int, pou: Float = 3
 ) -> pd.Series:
     r = (size * (100 - overlap - pou) / 100, size * (100 - overlap + pou) / 100)
     return (T.between(*r)) & (ncc > 0.5)
 
 
-def filter_outliers(T: pd.Series, isvalid: pd.Series, w: float = 1.5) -> pd.Series:
+def filter_outliers(T: pd.Series, isvalid: pd.Series, w: Float = 1.5) -> pd.Series:
     q1, _, q3 = np.quantile(T[isvalid], (0.25, 0.5, 0.75))
     iqd = max(1, np.abs(q3 - q1))
     return isvalid & T.between(q1 - w * iqd, q3 + w * iqd)
 
 
 def compute_repeatability(
-    grid: pd.DataFrame, overlap_n: float, overlap_w: float, W: int, H: int, pou: float
+    grid: pd.DataFrame, overlap_n: Float, overlap_w: Float, W: Int, H: Int, pou: Float
 ) -> Tuple[pd.DataFrame, float]:
     grid["north_valid1"] = filter_by_overlap_and_correlation(
         grid["north_y_first"], grid["north_ncc_first"], overlap_n, H, pou
@@ -103,7 +105,7 @@ def compute_repeatability(
     return grid, max(r_north, r_west)
 
 
-def filter_by_repeatability(grid: pd.DataFrame, r: float) -> pd.DataFrame:
+def filter_by_repeatability(grid: pd.DataFrame, r: Float) -> pd.DataFrame:
     for _, grp in grid.groupby("row"):
         isvalid = grp["north_valid2"].astype(bool)
         if not any(isvalid):
@@ -135,7 +137,7 @@ def replace_invalid_translations(grid: pd.DataFrame) -> pd.DataFrame:
     for direction in ["north", "west"]:
         for key in ["x", "y", "ncc"]:
             isvalid = grid[f"{direction}_valid3"]
-            grid.loc[isvalid][f"{direction}_{key}_second"] = grid.loc[
+            grid.loc[isvalid,f"{direction}_{key}_second"] = grid.loc[
                 isvalid, f"{direction}_{key}_first"
             ]
     for direction, rowcol in zip(["north", "west"], ["row", "col"]):

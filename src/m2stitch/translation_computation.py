@@ -4,8 +4,7 @@ from typing import Tuple
 import numpy as np
 import numpy.typing as npt
 
-from m2stitch.typing_utils import FloatArray
-from m2stitch.typing_utils import NumArray
+from .typing_utils import FloatArray, Int, NumArray, Float
 
 
 def pcm(image1: NumArray, image2: NumArray) -> FloatArray:
@@ -36,7 +35,7 @@ def pcm(image1: NumArray, image2: NumArray) -> FloatArray:
 
 
 def multi_peak_max(
-    PCM: FloatArray, n: int = 2
+    PCM: FloatArray, n: Int= 2
 ) -> Tuple[FloatArray, FloatArray, FloatArray]:
     """
     find the first to n th largest peaks in PCM
@@ -45,7 +44,7 @@ def multi_peak_max(
     ---------
     PCM : np.ndarray
         the peak correlation matrix
-    n : int
+    n : Int
         the number of the peaks
 
 
@@ -78,7 +77,7 @@ def ncc(image1: NumArray, image2: NumArray) -> float:
 
     Returns
     -------
-    ncc : float
+    ncc : Float
         the normalized cross correlation
 
     """
@@ -93,7 +92,7 @@ def ncc(image1: NumArray, image2: NumArray) -> float:
     return n / d
 
 
-def extract_overlap_subregion(image: NumArray, x: int, y: int) -> NumArray:
+def extract_overlap_subregion(image: NumArray, x: Int, y: Int) -> NumArray:
     """
     extract the overlapping subregion of the image
 
@@ -101,9 +100,9 @@ def extract_overlap_subregion(image: NumArray, x: int, y: int) -> NumArray:
     ---------
     image : np.ndarray
         the image (the dimension must be 2)
-    x : int
+    x : Int
         the x position
-    y : int
+    y : Int
         the y position
 
     Returns
@@ -124,7 +123,7 @@ def extract_overlap_subregion(image: NumArray, x: int, y: int) -> NumArray:
 
 
 def interpret_translation(
-    image1: NumArray, image2: npt.NDArray, xin: int, yin: int
+    image1: NumArray, image2: npt.NDArray, xin: Int, yin: Int
 ) -> Tuple[float, int, int]:
     """
     interpret the translation to find the real translation with heighest ncc
@@ -135,18 +134,18 @@ def interpret_translation(
         the first image (the dimension must be 2)
     image1 : np.ndarray
         the second image (the dimension must be 2)
-    xin : int
+    xin : Int
         the x position estimated by PCM
-    yin : int
+    yin : Int
         the y position estimated by PCM
 
     Returns
     -------
-    _ncc : float
+    _ncc : Float
         the highest ncc
-    x : int
+    x : Int
         the selected x position
-    y : int
+    y : Int
         the selected y position
 
     """

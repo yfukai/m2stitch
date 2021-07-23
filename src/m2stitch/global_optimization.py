@@ -2,6 +2,7 @@ import networkx as nx
 import numpy as np
 import pandas as pd
 
+from .typing_utils import Int, Float
 
 def compute_maximum_spanning_tree(grid: pd.DataFrame) -> nx.Graph:
     """
@@ -31,7 +32,7 @@ def compute_maximum_spanning_tree(grid: pd.DataFrame) -> nx.Graph:
 
 
 def compute_final_position(
-    grid: pd.DataFrame, tree: nx.Graph, source_index: int = 0
+    grid: pd.DataFrame, tree: nx.Graph, source_index: Int= 0
 ) -> pd.DataFrame:
     """
     compute the final tile positions by the computed maximum spanning tree

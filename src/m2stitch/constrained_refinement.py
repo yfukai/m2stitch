@@ -7,16 +7,15 @@ from tqdm import tqdm
 
 from .translation_computation import extract_overlap_subregion
 from .translation_computation import ncc
-from m2stitch.typing_utils import FloatArray
-from m2stitch.typing_utils import NumArray
+from .typing_utils import FloatArray, NumArray, Int, Float
 
 
 def find_local_max_integer_constrained(
-    func: Callable[[FloatArray], float],
+    func: Callable[[FloatArray], Float],
     init_x: FloatArray,
     limits: FloatArray,
-    max_iter: int = 100,
-) -> Tuple[FloatArray, float]:
+    max_iter: Int= 100,
+) -> Tuple[FloatArray, Float]:
     init_x = np.array(init_x)
     limits = np.array(limits)
     dim = init_x.shape[0]
@@ -43,7 +42,7 @@ def find_local_max_integer_constrained(
     return x, value
 
 
-def refine_translations(images: NumArray, grid: pd.DataFrame, r: float) -> pd.DataFrame:
+def refine_translations(images: NumArray, grid: pd.DataFrame, r: Float) -> pd.DataFrame:
     for direction in ["north", "west"]:
         for i2, g in tqdm(grid.iterrows(), total=len(grid)):
             i1 = g[direction]

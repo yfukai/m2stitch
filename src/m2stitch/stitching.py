@@ -17,14 +17,14 @@ from .stage_model import replace_invalid_translations
 from .translation_computation import interpret_translation
 from .translation_computation import multi_peak_max
 from .translation_computation import pcm
-from m2stitch.typing_utils import NumArray
+from .typing_utils import NumArray, Int, Float
 
 
 def stitch_images(
     images: Union[Sequence[NumArray], NumArray],
     rows: Sequence[Any],
     cols: Sequence[Any],
-    pou: float = 3,
+    pou: Float = 3,
     full_output: bool = False,
 ) -> Tuple[pd.DataFrame, dict]:
     """
@@ -41,7 +41,7 @@ def stitch_images(
     cols : list
         the col indices of the images
 
-    pou : float, default 3
+    pou : Float, default 3
         the "percent overlap uncertainty" parameter
 
     full_output : bool, default False
