@@ -1,5 +1,4 @@
 """Test cases for the __main__ module."""
-import inspect
 from os import path
 from typing import Tuple
 

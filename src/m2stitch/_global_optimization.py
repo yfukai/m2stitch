@@ -2,9 +2,6 @@ import networkx as nx
 import numpy as np
 import pandas as pd
 
-from .typing_utils import Float
-from .typing_utils import Int
-
 
 def compute_maximum_spanning_tree(grid: pd.DataFrame) -> nx.Graph:
     """Compute the maximum spanning tree to solve the overconstraint problem of
