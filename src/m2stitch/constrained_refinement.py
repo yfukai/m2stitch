@@ -36,7 +36,9 @@ def find_local_max_integer_constrained(
     Returns
     -------
     x : FloatArray
-        optimized array
+        the optimized parameters
+    val : Float
+        the optimized value
 
     """
 
@@ -67,6 +69,22 @@ def find_local_max_integer_constrained(
 
 
 def refine_translations(images: NumArray, grid: pd.DataFrame, r: Float) -> pd.DataFrame:
+    """Refine the translations using the normalized cross correlation.
+
+    Parameters
+    ----------
+    images : NumArray
+        the tile images 
+    grid : pd.DataFrame
+        the dataframe for the grid position, with columns "{north|west}_{x|y}_second"
+    r : Float
+        the repeatability
+
+    Returns
+    -------
+    grid : pd.DataFrame
+        the refined grid position, with columns "{north|west}_{x|y|ncc}" 
+    """
     for direction in ["north", "west"]:
         for i2, g in tqdm(grid.iterrows(), total=len(grid)):
             i1 = g[direction]
