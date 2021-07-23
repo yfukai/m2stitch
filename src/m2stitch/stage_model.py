@@ -1,11 +1,11 @@
 import itertools
-from typing import Tuple
+from typing import Tuple, Union
 
 import numpy as np
 import pandas as pd
 from scipy.optimize import minimize
 
-from .typing_utils import Int, Float
+from .typing_utils import FloatArray, Int, Float
 
 
 def calc_liklihood(prob_uniform: Float, mu: Float, sigma: Float, t: Float) -> Float:
@@ -16,7 +16,7 @@ def calc_liklihood(prob_uniform: Float, mu: Float, sigma: Float, t: Float) -> Fl
     return p * uniform_liklihood + (1 - p) * norm_liklihood
 
 
-def compute_inv_liklihood(params: Tuple[Float, Float, Float], T: list) -> Float:
+def compute_inv_liklihood(params: Union[Tuple[Float, Float, Float],FloatArray], T: FloatArray) -> Float:
     prob_uniform, mu, sigma = params
     return -np.sum(
         [np.log(np.abs(calc_liklihood(prob_uniform, mu, sigma, t))) for t in T]
@@ -62,7 +62,7 @@ def compute_image_overlap(
     assert not best_model is None
     #    best_model_params : Tuple[Float,Float,Float] = tuple(best_model["x"])
 
-    return best_model["x"]
+    return tuple(best_model["x"])
 
 
 def filter_by_overlap_and_correlation(
@@ -73,7 +73,7 @@ def filter_by_overlap_and_correlation(
 
 
 def filter_outliers(T: pd.Series, isvalid: pd.Series, w: Float = 1.5) -> pd.Series:
-    q1, _, q3 = np.quantile(T[isvalid], (0.25, 0.5, 0.75))
+    q1, _, q3 = np.quantile(T[isvalid].values, (0.25, 0.5, 0.75))
     iqd = max(1, np.abs(q3 - q1))
     return isvalid & T.between(q1 - w * iqd, q3 + w * iqd)
 
