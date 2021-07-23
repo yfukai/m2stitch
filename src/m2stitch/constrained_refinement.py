@@ -35,8 +35,9 @@ def find_local_max_integer_constrained(
 
     Returns
     -------
-    Tuple[FloatArray, Float]
-        [description]
+    x : FloatArray
+        optimized array
+
     """
 
     init_x = np.array(init_x)
@@ -45,7 +46,7 @@ def find_local_max_integer_constrained(
     assert limits.shape[0] == dim
     value = func(init_x)
     x = init_x
-    for i in range(max_iter):
+    for _ in range(max_iter):
         around_x = [x + np.array(dxs) for dxs in itertools.product(*[[-1, 0, 1]] * dim)]
         around_x = [
             x
