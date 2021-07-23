@@ -124,7 +124,7 @@ def extract_overlap_subregion(image: NumArray, x: Int, y: Int) -> NumArray:
 
 def interpret_translation(
     image1: NumArray, image2: npt.NDArray, xin: Int, yin: Int
-) -> Tuple[float, int, int]:
+) -> Tuple[Float, int, int]:
     """
     interpret the translation to find the real translation with heighest ncc
 

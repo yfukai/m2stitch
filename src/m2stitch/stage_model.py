@@ -8,7 +8,7 @@ from scipy.optimize import minimize
 from .typing_utils import Int, Float
 
 
-def calc_liklihood(prob_uniform: Float, mu: Float, sigma: Float, t: Float) -> float:
+def calc_liklihood(prob_uniform: Float, mu: Float, sigma: Float, t: Float) -> Float:
     t2 = -((t - mu) ** 2) / (2 * sigma ** 2)
     norm_liklihood = 1.0 / (np.sqrt(2 * np.pi) * sigma) * np.exp(t2)
     uniform_liklihood = 1 / 100.0
@@ -16,7 +16,7 @@ def calc_liklihood(prob_uniform: Float, mu: Float, sigma: Float, t: Float) -> fl
     return p * uniform_liklihood + (1 - p) * norm_liklihood
 
 
-def compute_inv_liklihood(params: Tuple[float, float, float], T: list) -> float:
+def compute_inv_liklihood(params: Tuple[Float, Float, Float], T: list) -> Float:
     prob_uniform, mu, sigma = params
     return -np.sum(
         [np.log(np.abs(calc_liklihood(prob_uniform, mu, sigma, t))) for t in T]
@@ -30,7 +30,7 @@ def compute_image_overlap(
     H: Int,
     max_stall_count: Int= 100,
     prob_uniform_threshold: Float = 90,
-) -> Tuple[float, float, float]:
+) -> Tuple[Float, Float, Float]:
     if direction == "north":
         T = grid["north_y_first"].values / H * 100
     elif direction == "west":
@@ -60,7 +60,7 @@ def compute_image_overlap(
                 elif model["fun"] < best_model["fun"]:
                     best_model = model
     assert not best_model is None
-    #    best_model_params : Tuple[float,float,float] = tuple(best_model["x"])
+    #    best_model_params : Tuple[Float,Float,Float] = tuple(best_model["x"])
 
     return best_model["x"]
 
@@ -80,7 +80,7 @@ def filter_outliers(T: pd.Series, isvalid: pd.Series, w: Float = 1.5) -> pd.Seri
 
 def compute_repeatability(
     grid: pd.DataFrame, overlap_n: Float, overlap_w: Float, W: Int, H: Int, pou: Float
-) -> Tuple[pd.DataFrame, float]:
+) -> Tuple[pd.DataFrame, Float]:
     grid["north_valid1"] = filter_by_overlap_and_correlation(
         grid["north_y_first"], grid["north_ncc_first"], overlap_n, H, pou
     )
