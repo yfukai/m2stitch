@@ -1,14 +1,12 @@
 import itertools
 from typing import Tuple
 
-from pandas.core import series
-
 import numpy as np
 import pandas as pd
 from scipy.optimize import minimize
 
 
-def calc_liklihood(prob_uniform : float, mu : float, sigma : float, t : float) -> float:
+def calc_liklihood(prob_uniform: float, mu: float, sigma: float, t: float) -> float:
     t2 = -((t - mu) ** 2) / (2 * sigma ** 2)
     norm_liklihood = 1.0 / (np.sqrt(2 * np.pi) * sigma) * np.exp(t2)
     uniform_liklihood = 1 / 100.0
@@ -16,7 +14,7 @@ def calc_liklihood(prob_uniform : float, mu : float, sigma : float, t : float) -
     return p * uniform_liklihood + (1 - p) * norm_liklihood
 
 
-def compute_inv_liklihood(params : Tuple[float,float,float], T : list) -> float:
+def compute_inv_liklihood(params: Tuple[float, float, float], T: list) -> float:
     prob_uniform, mu, sigma = params
     return -np.sum(
         [np.log(np.abs(calc_liklihood(prob_uniform, mu, sigma, t))) for t in T]
@@ -24,8 +22,13 @@ def compute_inv_liklihood(params : Tuple[float,float,float], T : list) -> float:
 
 
 def compute_image_overlap(
-    grid : pd.DataFrame, direction:str, W:int, H:int, max_stall_count:int=100, prob_uniform_threshold:float=90
-)->Tuple[float,float,float]:
+    grid: pd.DataFrame,
+    direction: str,
+    W: int,
+    H: int,
+    max_stall_count: int = 100,
+    prob_uniform_threshold: float = 90,
+) -> Tuple[float, float, float]:
     if direction == "north":
         T = grid["north_y_first"].values / H * 100
     elif direction == "west":
@@ -55,23 +58,27 @@ def compute_image_overlap(
                 elif model["fun"] < best_model["fun"]:
                     best_model = model
     assert not best_model is None
-#    best_model_params : Tuple[float,float,float] = tuple(best_model["x"])
+    #    best_model_params : Tuple[float,float,float] = tuple(best_model["x"])
 
     return best_model["x"]
 
 
-def filter_by_overlap_and_correlation(T:pd.Series, ncc : pd.Series, overlap : float, size : int, pou:float=3) -> pd.Series:
+def filter_by_overlap_and_correlation(
+    T: pd.Series, ncc: pd.Series, overlap: float, size: int, pou: float = 3
+) -> pd.Series:
     r = (size * (100 - overlap - pou) / 100, size * (100 - overlap + pou) / 100)
     return (T.between(*r)) & (ncc > 0.5)
 
 
-def filter_outliers(T : pd.Series, isvalid:pd.Series, w:float=1.5) -> pd.Series:
+def filter_outliers(T: pd.Series, isvalid: pd.Series, w: float = 1.5) -> pd.Series:
     q1, _, q3 = np.quantile(T[isvalid], (0.25, 0.5, 0.75))
     iqd = max(1, np.abs(q3 - q1))
     return isvalid & T.between(q1 - w * iqd, q3 + w * iqd)
 
 
-def compute_repeatability(grid : pd.DataFrame, overlap_n: float, overlap_w : float, W : int, H : int, pou : float) -> Tuple[pd.DataFrame,float]:
+def compute_repeatability(
+    grid: pd.DataFrame, overlap_n: float, overlap_w: float, W: int, H: int, pou: float
+) -> Tuple[pd.DataFrame, float]:
     grid["north_valid1"] = filter_by_overlap_and_correlation(
         grid["north_y_first"], grid["north_ncc_first"], overlap_n, H, pou
     )
@@ -96,7 +103,7 @@ def compute_repeatability(grid : pd.DataFrame, overlap_n: float, overlap_w : flo
     return grid, max(r_north, r_west)
 
 
-def filter_by_repeatability(grid:pd.DataFrame, r : float) -> pd.DataFrame:
+def filter_by_repeatability(grid: pd.DataFrame, r: float) -> pd.DataFrame:
     for _, grp in grid.groupby("row"):
         isvalid = grp["north_valid2"].astype(bool)
         if not any(isvalid):
@@ -124,7 +131,7 @@ def filter_by_repeatability(grid:pd.DataFrame, r : float) -> pd.DataFrame:
     return grid
 
 
-def replace_invalid_translations(grid:pd.DataFrame) -> pd.DataFrame:
+def replace_invalid_translations(grid: pd.DataFrame) -> pd.DataFrame:
     for direction in ["north", "west"]:
         for key in ["x", "y", "ncc"]:
             isvalid = grid[f"{direction}_valid3"]

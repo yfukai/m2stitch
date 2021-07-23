@@ -12,14 +12,14 @@ from m2stitch import stitch_images
 
 
 @pytest.fixture
-def test_image_path(shared_datadir:str)->Tuple[npt.NDArray,pd.DataFrame]:
+def test_image_path(shared_datadir: str) -> Tuple[npt.NDArray, pd.DataFrame]:
     testimages = np.load(path.join(shared_datadir, "testimages.npy"))
     props = pd.read_csv(path.join(shared_datadir, "testimages_props.csv"), index_col=0)
     assert np.array_equal(props.index, np.arange(testimages.shape[0]))
     return (testimages, props)
 
 
-def test_stitching(test_image_path:Tuple[npt.NDArray,pd.DataFrame]) -> None:
+def test_stitching(test_image_path: Tuple[npt.NDArray, pd.DataFrame]) -> None:
     testimages, props = test_image_path
     """It exits with a status code of zero."""
     rows = props["row"].to_list()

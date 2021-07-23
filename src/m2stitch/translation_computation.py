@@ -4,10 +4,11 @@ from typing import Tuple
 import numpy as np
 import numpy.typing as npt
 
-from m2stitch.typing_utils import FloatArray, NumArray
+from m2stitch.typing_utils import FloatArray
+from m2stitch.typing_utils import NumArray
 
 
-def pcm(image1 : NumArray, image2 : NumArray) -> FloatArray:
+def pcm(image1: NumArray, image2: NumArray) -> FloatArray:
     """
     compute peak correlation matrix for two images
 
@@ -34,7 +35,9 @@ def pcm(image1 : NumArray, image2 : NumArray) -> FloatArray:
     return np.fft.ifft2(FC / np.abs(FC)).real.astype(np.float32)
 
 
-def multi_peak_max(PCM : FloatArray, n : int=2) -> Tuple[FloatArray,FloatArray,FloatArray]:
+def multi_peak_max(
+    PCM: FloatArray, n: int = 2
+) -> Tuple[FloatArray, FloatArray, FloatArray]:
     """
     find the first to n th largest peaks in PCM
 
@@ -57,11 +60,11 @@ def multi_peak_max(PCM : FloatArray, n : int=2) -> Tuple[FloatArray,FloatArray,F
 
     """
     row, col = np.unravel_index(np.argsort(PCM.ravel()), PCM.shape)
-    vals=PCM[row[-n:][::-1], col[-n:][::-1]]
+    vals = PCM[row[-n:][::-1], col[-n:][::-1]]
     return row[-n:][::-1], col[-n:][::-1], vals
 
 
-def ncc(image1 : NumArray , image2: NumArray) -> float:
+def ncc(image1: NumArray, image2: NumArray) -> float:
     """
     compute the normalized cross correlation for two images
 
@@ -90,9 +93,9 @@ def ncc(image1 : NumArray , image2: NumArray) -> float:
     return n / d
 
 
-def extract_overlap_subregion(image : NumArray, x : int, y:int) -> NumArray:
+def extract_overlap_subregion(image: NumArray, x: int, y: int) -> NumArray:
     """
-    extract the overlapping subregion of the image 
+    extract the overlapping subregion of the image
 
     Parameters
     ---------
@@ -109,7 +112,7 @@ def extract_overlap_subregion(image : NumArray, x : int, y:int) -> NumArray:
         the extracted subimage
 
     """
-    
+
     W = image.shape[0]
     H = image.shape[1]
     assert (np.abs(x) < W) and (np.abs(y) < H)
@@ -120,7 +123,9 @@ def extract_overlap_subregion(image : NumArray, x : int, y:int) -> NumArray:
     return image[xstart:xend, ystart:yend]
 
 
-def interpret_translation(image1:NumArray, image2:npt.NDArray, xin:int, yin:int) -> Tuple[float, int, int]:
+def interpret_translation(
+    image1: NumArray, image2: npt.NDArray, xin: int, yin: int
+) -> Tuple[float, int, int]:
     """
     interpret the translation to find the real translation with heighest ncc
 
