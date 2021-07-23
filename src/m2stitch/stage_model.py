@@ -54,8 +54,10 @@ def compute_image_overlap(
                     return model["x"]
                 elif model["fun"] < best_model["fun"]:
                     best_model = model
-    best_model_params : Tuple[float,float,float] = tuple(best_model["x"])
-    return best_model_params
+    assert not best_model is None
+#    best_model_params : Tuple[float,float,float] = tuple(best_model["x"])
+
+    return best_model["x"]
 
 
 def filter_by_overlap_and_correlation(T:pd.Series, ncc : pd.Series, overlap : float, size : int, pou:float=3) -> pd.Series:
