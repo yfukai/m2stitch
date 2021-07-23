@@ -1,6 +1,5 @@
 import itertools
-from collections.abc import Callable
-from typing import Tuple
+from typing import Callable, Tuple
 
 import numpy as np
 import pandas as pd
