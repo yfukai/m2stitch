@@ -12,6 +12,24 @@ from ._typing_utils import Int
 
 
 def calc_liklihood(prob_uniform: Float, mu: Float, sigma: Float, t: Float) -> Float:
+    """Calculate the liklihood of the translation.
+
+    Parameters
+    ----------
+    prob_uniform : Float
+        the probability of the uniform error
+    mu : Float
+        the mean of the Gaussian distribution
+    sigma : Float
+        the stdev of the Gaussian distribution
+    t : Float
+        the translation amplitude
+
+    Returns
+    -------
+    liklihood : Float
+        the calculated liklihood
+    """
     t2 = -((t - mu) ** 2) / (2 * sigma ** 2)
     norm_liklihood = 1.0 / (np.sqrt(2 * np.pi) * sigma) * np.exp(t2)
     uniform_liklihood = 1 / 100.0
@@ -22,6 +40,20 @@ def calc_liklihood(prob_uniform: Float, mu: Float, sigma: Float, t: Float) -> Fl
 def compute_inv_liklihood(
     params: Union[Tuple[Float, Float, Float], FloatArray], T: FloatArray
 ) -> Float:
+    """Compute the negated sum of log liklihood.
+
+    Parameters
+    ----------
+    params : Union[Tuple[Float, Float, Float], FloatArray]
+        the parameters : prob_uniform, mu, sigma
+    T : FloatArray
+        the value of translations
+
+    Returns
+    -------
+    inv_log_likelihood : Float
+        the negated sum of log liklihood
+    """
     prob_uniform, mu, sigma = params
     return -np.sum(
         [np.log(np.abs(calc_liklihood(prob_uniform, mu, sigma, t))) for t in T]
@@ -36,6 +68,33 @@ def compute_image_overlap(
     max_stall_count: Int = 100,
     prob_uniform_threshold: Float = 90,
 ) -> Tuple[float, ...]:
+    """Compute the value of the image overlap.
+
+    Parameters
+    ----------
+    grid : pd.DataFrame
+        the dataframe for the grid position, with columns "{north|west}_{x|y}_first"
+    direction : str
+        the direction of the overlap, either of "north" or "west"
+    W : Int
+        the image width
+    H : Int
+        the image height
+    max_stall_count : Int, optional
+        the maximum count of optimization, by default 100
+    prob_uniform_threshold : Float, optional
+        the threshold for the probabillity for uniform error, by default 90
+
+    Returns
+    -------
+    x : Tuple[float, float, float]
+        the computed parameters : prob_uniform, mu, sigma
+
+    Raises
+    ------
+    ValueError
+        when direction is not in ["north","west"], raises ValueError
+    """
     if direction == "north":
         T = grid["north_y_first"].values / H * 100
     elif direction == "west":
@@ -74,11 +133,47 @@ def compute_image_overlap(
 def filter_by_overlap_and_correlation(
     T: pd.Series, ncc: pd.Series, overlap: Float, size: Int, pou: Float = 3
 ) -> pd.Series:
+    """Filter the translation values by estimated overlap.
+
+    Parameters
+    ----------
+    T : pd.Series
+        the translation
+    ncc : pd.Series
+        the normalized cross correlation, this value should be > 0.5 to be valid
+    overlap : Float
+        the estimated overlap
+    size : Int
+        the size of image dimension
+    pou : Float, optional
+        the percentile margin for error, by default 3
+
+    Returns
+    -------
+    isvalid : pd.Series
+        whether the translation is within the estimated limit
+    """
     r = (size * (100 - overlap - pou) / 100, size * (100 - overlap + pou) / 100)
     return (T.between(*r)) & (ncc > 0.5)
 
 
 def filter_outliers(T: pd.Series, isvalid: pd.Series, w: Float = 1.5) -> pd.Series:
+    """Filter the translation outside the 25% and 75% percentiles * w.
+
+    Parameters
+    ----------
+    T : pd.Series
+        the translation
+    isvalid : pd.Series
+        whether the translation is valid
+    w : Float, optional
+        the coef for the percentiles, by default 1.5
+
+    Returns
+    -------
+    isvalid : pd.Series
+        whether the translation is within the estimated limit
+    """
     q1, _, q3 = np.quantile(T[isvalid].values, (0.25, 0.5, 0.75))
     iqd = max(1, np.abs(q3 - q1))
     return isvalid & T.between(q1 - w * iqd, q3 + w * iqd)
@@ -87,6 +182,30 @@ def filter_outliers(T: pd.Series, isvalid: pd.Series, w: Float = 1.5) -> pd.Seri
 def compute_repeatability(
     grid: pd.DataFrame, overlap_n: Float, overlap_w: Float, W: Int, H: Int, pou: Float
 ) -> Tuple[pd.DataFrame, Float]:
+    """Compute the repeatability of the stage motion.
+
+    Parameters
+    ----------
+    grid : pd.DataFrame
+        the dataframe for the grid position, with columns "{north|west}_{x|y|ncc}_first"
+    overlap_n : Float
+        the estimated overlap for north direction
+    overlap_w : Float
+        the estimated overlap for west direction
+    W : Int
+        the width of the height images 
+    H : Int
+        the width of the tile images 
+    pou : Float
+        the percentile margin for error, by default 3
+
+    Returns
+    -------
+    grid : pd.DataFrame
+        the updated dataframe for the grid position
+    repeatability : Float
+        the repeatability of the stage motion
+    """
     grid["north_valid1"] = filter_by_overlap_and_correlation(
         grid["north_y_first"], grid["north_ncc_first"], overlap_n, H, pou
     )
@@ -112,6 +231,20 @@ def compute_repeatability(
 
 
 def filter_by_repeatability(grid: pd.DataFrame, r: Float) -> pd.DataFrame:
+    """Filter the stage translation by repeatability.
+
+    Parameters
+    ----------
+    grid : pd.DataFrame
+        the dataframe for the grid position, with columns "{north|west}_{x|y|ncc}_first"
+    r : Float
+        the repeatability value
+
+    Returns
+    -------
+    grid : pd.DataFrame
+        the updated dataframe for the grid position
+    """
     for _, grp in grid.groupby("row"):
         isvalid = grp["north_valid2"].astype(bool)
         if not any(isvalid):
@@ -140,6 +273,18 @@ def filter_by_repeatability(grid: pd.DataFrame, r: Float) -> pd.DataFrame:
 
 
 def replace_invalid_translations(grid: pd.DataFrame) -> pd.DataFrame:
+    """Replace invalid translations by estimated values.
+
+    Parameters
+    ----------
+    grid : pd.DataFrame
+        the dataframe for the grid position, with columns "{north|west}_{x|y}_second" and "{north|west}_valid3"
+
+    Returns
+    -------
+    grid : pd.DataFrame
+        the updatd dataframe for the grid position
+    """
     for direction in ["north", "west"]:
         for key in ["x", "y", "ncc"]:
             isvalid = grid[f"{direction}_valid3"]

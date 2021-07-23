@@ -56,7 +56,6 @@ def stitch_images(
     prop_dict : dict
         the dict of estimated parameters. (to be documented)
     """
-
     images = np.array(images)
     assert images.shape[0] == len(rows)
     assert images.shape[0] == len(cols)
