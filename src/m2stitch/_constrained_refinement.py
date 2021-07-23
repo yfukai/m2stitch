@@ -6,12 +6,12 @@ import numpy as np
 import pandas as pd
 from tqdm import tqdm
 
-from .translation_computation import extract_overlap_subregion
-from .translation_computation import ncc
-from .typing_utils import Float
-from .typing_utils import FloatArray
-from .typing_utils import Int
-from .typing_utils import NumArray
+from ._translation_computation import extract_overlap_subregion
+from ._translation_computation import ncc
+from ._typing_utils import Float
+from ._typing_utils import FloatArray
+from ._typing_utils import Int
+from ._typing_utils import NumArray
 
 
 def find_local_max_integer_constrained(

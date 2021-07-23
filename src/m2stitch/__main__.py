@@ -1,7 +1,7 @@
 """Command-line interface."""
 import click
 
-#from .stitching import stitch_images
+# from .stitching import stitch_images
 
 
 @click.command()

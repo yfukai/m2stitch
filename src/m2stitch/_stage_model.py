@@ -6,9 +6,9 @@ import numpy as np
 import pandas as pd
 from scipy.optimize import minimize
 
-from .typing_utils import Float
-from .typing_utils import FloatArray
-from .typing_utils import Int
+from ._typing_utils import Float
+from ._typing_utils import FloatArray
+from ._typing_utils import Int
 
 
 def calc_liklihood(prob_uniform: Float, mu: Float, sigma: Float, t: Float) -> Float:
