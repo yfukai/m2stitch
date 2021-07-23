@@ -278,7 +278,7 @@ def replace_invalid_translations(grid: pd.DataFrame) -> pd.DataFrame:
     Parameters
     ----------
     grid : pd.DataFrame
-        the dataframe for the grid position, 
+        the dataframe for the grid position,
         with columns "{north|west}_{x|y}_second" and "{north|west}_valid3"
 
     Returns

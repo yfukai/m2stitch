@@ -11,7 +11,7 @@ def compute_maximum_spanning_tree(grid: pd.DataFrame) -> nx.Graph:
     Parameters
     ----------
     grid : pd.DataFrame
-        the dataframe for the grid position, 
+        the dataframe for the grid position,
         with columns "{north|west}_{x|y|ncc|valid3}"
 
     Returns
