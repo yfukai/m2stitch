@@ -4,7 +4,10 @@ from typing import Tuple
 import numpy as np
 import numpy.typing as npt
 
-from .typing_utils import FloatArray, Int, NumArray, Float
+from .typing_utils import Float
+from .typing_utils import FloatArray
+from .typing_utils import Int
+from .typing_utils import NumArray
 
 
 def pcm(image1: NumArray, image2: NumArray) -> FloatArray:
@@ -35,7 +38,7 @@ def pcm(image1: NumArray, image2: NumArray) -> FloatArray:
 
 
 def multi_peak_max(
-    PCM: FloatArray, n: Int= 2
+    PCM: FloatArray, n: int = 2
 ) -> Tuple[FloatArray, FloatArray, FloatArray]:
     """
     find the first to n th largest peaks in PCM

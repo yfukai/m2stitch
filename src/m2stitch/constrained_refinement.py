@@ -1,5 +1,6 @@
 import itertools
-from typing import Callable, Tuple
+from typing import Callable
+from typing import Tuple
 
 import numpy as np
 import pandas as pd
@@ -7,15 +8,37 @@ from tqdm import tqdm
 
 from .translation_computation import extract_overlap_subregion
 from .translation_computation import ncc
-from .typing_utils import FloatArray, NumArray, Int, Float
+from .typing_utils import Float
+from .typing_utils import FloatArray
+from .typing_utils import Int
+from .typing_utils import NumArray
 
 
 def find_local_max_integer_constrained(
     func: Callable[[FloatArray], Float],
     init_x: FloatArray,
     limits: FloatArray,
-    max_iter: Int= 100,
+    max_iter: Int = 100,
 ) -> Tuple[FloatArray, Float]:
+    """Find local maxima of a function with integer steps
+
+    Parameters
+    ----------
+    func : Callable[[FloatArray], Float]
+        function to optimize
+    init_x : FloatArray
+        the initial guess of parameters
+    limits : FloatArray
+        the limit of parameters
+    max_iter : Int, optional
+        the maximum iteration for the optimization, by default 100
+
+    Returns
+    -------
+    Tuple[FloatArray, Float]
+        [description]
+    """
+
     init_x = np.array(init_x)
     limits = np.array(limits)
     dim = init_x.shape[0]

@@ -1,11 +1,14 @@
 import itertools
-from typing import Tuple, Union
+from typing import Tuple
+from typing import Union
 
 import numpy as np
 import pandas as pd
 from scipy.optimize import minimize
 
-from .typing_utils import FloatArray, Int, Float
+from .typing_utils import Float
+from .typing_utils import FloatArray
+from .typing_utils import Int
 
 
 def calc_liklihood(prob_uniform: Float, mu: Float, sigma: Float, t: Float) -> Float:
@@ -16,7 +19,9 @@ def calc_liklihood(prob_uniform: Float, mu: Float, sigma: Float, t: Float) -> Fl
     return p * uniform_liklihood + (1 - p) * norm_liklihood
 
 
-def compute_inv_liklihood(params: Union[Tuple[Float, Float, Float],FloatArray], T: FloatArray) -> Float:
+def compute_inv_liklihood(
+    params: Union[Tuple[Float, Float, Float], FloatArray], T: FloatArray
+) -> Float:
     prob_uniform, mu, sigma = params
     return -np.sum(
         [np.log(np.abs(calc_liklihood(prob_uniform, mu, sigma, t))) for t in T]
@@ -28,7 +33,7 @@ def compute_image_overlap(
     direction: str,
     W: Int,
     H: Int,
-    max_stall_count: Int= 100,
+    max_stall_count: Int = 100,
     prob_uniform_threshold: Float = 90,
 ) -> Tuple[Float, Float, Float]:
     if direction == "north":
@@ -56,7 +61,7 @@ def compute_image_overlap(
                 best_model = model
             else:
                 if np.isclose(best_model["fun"], model["fun"]):
-                    return model["x"]
+                    return tuple(model["x"])
                 elif model["fun"] < best_model["fun"]:
                     best_model = model
     assert not best_model is None
@@ -137,7 +142,7 @@ def replace_invalid_translations(grid: pd.DataFrame) -> pd.DataFrame:
     for direction in ["north", "west"]:
         for key in ["x", "y", "ncc"]:
             isvalid = grid[f"{direction}_valid3"]
-            grid.loc[isvalid,f"{direction}_{key}_second"] = grid.loc[
+            grid.loc[isvalid, f"{direction}_{key}_second"] = grid.loc[
                 isvalid, f"{direction}_{key}_first"
             ]
     for direction, rowcol in zip(["north", "west"], ["row", "col"]):

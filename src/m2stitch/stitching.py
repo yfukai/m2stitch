@@ -17,7 +17,9 @@ from .stage_model import replace_invalid_translations
 from .translation_computation import interpret_translation
 from .translation_computation import multi_peak_max
 from .translation_computation import pcm
-from .typing_utils import NumArray, Int, Float
+from .typing_utils import Float
+from .typing_utils import Int
+from .typing_utils import NumArray
 
 
 def stitch_images(
