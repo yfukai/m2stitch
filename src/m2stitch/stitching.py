@@ -102,7 +102,7 @@ def stitch_images(
             found_peaks = list(zip(*multi_peak_max(PCM)))
 
             interpreted_peaks = []
-            for r, c, v in found_peaks:
+            for r, c, _ in found_peaks:
                 interpreted_peaks.append(interpret_translation(image1, image2, r, c))
             max_peak = interpreted_peaks[np.argmax(np.array(interpreted_peaks)[:, 0])]
             for j, key in enumerate(["ncc", "x", "y"]):

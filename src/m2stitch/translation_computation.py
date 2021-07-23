@@ -118,16 +118,16 @@ def extract_overlap_subregion(image: NumArray, x: Int, y: Int) -> NumArray:
     W = image.shape[0]
     H = image.shape[1]
     assert (np.abs(x) < W) and (np.abs(y) < H)
-    xstart = max(0, min(x, W))
-    xend = max(0, min(x + W, W))
-    ystart = max(0, min(y, H))
-    yend = max(0, min(y + H, H))
+    xstart = int(max(0, min(x, W, key=int), key=int))
+    xend = int(max(0, min(x + W, W, key=int), key=int))
+    ystart = int(max(0, min(y, H, key=int), key=int))
+    yend = int(max(0, min(y + H, H, key=int), key=int))
     return image[xstart:xend, ystart:yend]
 
 
 def interpret_translation(
     image1: NumArray, image2: npt.NDArray, xin: Int, yin: Int
-) -> Tuple[Float, Int, Int]:
+) -> Tuple[float, int, int]:
     """
     interpret the translation to find the real translation with heighest ncc
 
@@ -170,7 +170,7 @@ def interpret_translation(
         subI2 = extract_overlap_subregion(image2, -(xmag * xsign), -(ymag * ysign))
         ncc_val = ncc(subI1, subI2)
         if ncc_val > _ncc:
-            _ncc = ncc_val
-            x = xmag * xsign
-            y = ymag * ysign
+            _ncc = float(ncc_val)
+            x = int(xmag * xsign)
+            y = int(ymag * ysign)
     return _ncc, x, y

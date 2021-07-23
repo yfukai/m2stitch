@@ -35,7 +35,8 @@ def compute_image_overlap(
     H: Int,
     max_stall_count: Int = 100,
     prob_uniform_threshold: Float = 90,
-) -> Tuple[Float, Float, Float]:
+) -> FloatArray:
+    # ) -> Tuple[Float, Float, Float]:
     if direction == "north":
         T = grid["north_y_first"].values / H * 100
     elif direction == "west":
@@ -47,7 +48,7 @@ def compute_image_overlap(
     #    assert np.all(0 <= T < 100)
 
     best_model = None
-    for i in range(max_stall_count):
+    for _ in range(max_stall_count):
         init_guess = np.random.uniform(0, 100, size=(3,))
         model = minimize(
             compute_inv_liklihood,
@@ -67,7 +68,7 @@ def compute_image_overlap(
     assert not best_model is None
     #    best_model_params : Tuple[Float,Float,Float] = tuple(best_model["x"])
 
-    return tuple(best_model["x"])
+    return best_model["x"]
 
 
 def filter_by_overlap_and_correlation(
