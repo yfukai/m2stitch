@@ -36,14 +36,8 @@ M2Stitch
 Features
 --------
 
-* TODO
-
-
-Requirements
-------------
-
-* TODO
-
+- Provides robust stitching of tiled microscope images, following algorithm by MIST_.
+- Supports irregular-shaped tiles, if they are connected.
 
 Installation
 ------------
@@ -58,7 +52,7 @@ You can install *M2Stitch* via pip_ from PyPI_:
 Usage
 -----
 
-Please see the `Command-line Reference <Usage_>`_ for details.
+Please see the Usage_ for details.
 
 
 Contributing
@@ -87,6 +81,7 @@ Credits
 
 This project was generated from `@cjolowicz`_'s `Hypermodern Python Cookiecutter`_ template.
 
+.. _MIST: https://pages.nist.gov/MIST
 .. _@cjolowicz: https://github.com/cjolowicz
 .. _Cookiecutter: https://github.com/audreyr/cookiecutter
 .. _MIT license: https://opensource.org/licenses/MIT
