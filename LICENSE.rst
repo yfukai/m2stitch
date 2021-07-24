@@ -24,7 +24,7 @@ software.**
 License for Microscopy Image Stitching Tool (MIST)
 ==================================================
 
-This package is an unofficial re-implementation of the algorithm for MIST (https://pages.nist.gov/MIST/). 
+This package is an unofficial re-implementation of the algorithm for MIST (https://pages.nist.gov/MIST/).
 The original license for MIST (https://github.com/usnistgov/MIST/blob/27a8787/LICENSE.txt) is as follows.
 
 NIST-developed software is provided by NIST as a public service. You may use, copy and distribute copies of the software in any medium, provided that you keep intact this entire notice. You may improve, modify and create derivative works of the software or any portion of the software, and you may copy and distribute such modifications or works. Modified works should carry a notice stating that you changed the software and should note the date and nature of any such change. Please explicitly acknowledge the National Institute of Standards and Technology as the source of the software.
