@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "m2stitch"
-version = "0.0.1a"
+version = "0.1.0"
 description = "M2Stitch"
 authors = ["Yohsuke Fukai <ysk@yfukai.net>"]
 license = "MIT"
@@ -9,7 +9,7 @@ homepage = "https://github.com/yfukai/m2stitch"
 repository = "https://github.com/yfukai/m2stitch"
 documentation = "https://m2stitch.readthedocs.io"
 classifiers = [
-    "Development Status :: 2 - Pre-Alpha",
+    "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
     "Intended Audience :: Science/Research",
     "Natural Language :: English",
