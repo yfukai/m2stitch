@@ -20,6 +20,7 @@ print(rows)
 # the row indices for each tile index. for example, [1,1,2,2,2,...]
 print(cols)
 # the column indices for each tile index. for example, [2,3,1,2,3,...]
+
 result_df, _ = m2stitch.stitch_images(images, rows, cols)
 
 print(result_df["x_pos"])
