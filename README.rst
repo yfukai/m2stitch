@@ -37,7 +37,7 @@ Features
 --------
 
 - Provides robust stitching of tiled microscope images, following algorithm by MIST_.
-- Supports irregular-shaped tiles, if they are connected.
+- Supports irregular-shaped connected tiles.
 
 Installation
 ------------
