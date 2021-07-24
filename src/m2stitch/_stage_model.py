@@ -176,7 +176,7 @@ def filter_outliers(T: pd.Series, isvalid: pd.Series, w: Float = 1.5) -> pd.Seri
     """
     valid_T = T[isvalid].values
     if len(valid_T) < 1:
-        return isvalid & False
+        return isvalid
     q1, _, q3 = np.quantile(valid_T, (0.25, 0.5, 0.75))
     iqd = max(1, np.abs(q3 - q1))
     return isvalid & T.between(q1 - w * iqd, q3 + w * iqd)
@@ -218,17 +218,23 @@ def compute_repeatability(
     grid["north_valid2"] = filter_outliers(grid["north_y_first"], grid["north_valid1"])
     grid["west_valid2"] = filter_outliers(grid["west_x_first"], grid["west_valid1"])
 
-    xs = grid[grid["north_valid2"]]["north_x_first"]
-    rx_north = np.ceil((xs.max() - xs.min()) / 2)
-    _, yss = zip(*grid[grid["north_valid2"]].groupby("col")["north_y_first"])
-    ry_north = np.ceil(np.max([np.max(ys) - np.min(ys) for ys in yss]) / 2)
-    r_north = max(rx_north, ry_north)
+    if np.any(grid["north_valid2"]):
+        xs = grid[grid["north_valid2"]]["north_x_first"]
+        rx_north = np.ceil((xs.max() - xs.min()) / 2)
+        _, yss = zip(*grid[grid["north_valid2"]].groupby("col")["north_y_first"])
+        ry_north = np.ceil(np.max([np.max(ys) - np.min(ys) for ys in yss]) / 2)
+        r_north = max(rx_north, ry_north)
+    else:
+        r_north = 0  # better than failing
 
-    ys = grid[grid["west_valid2"]]["west_y_first"]
-    ry_west = np.ceil((ys.max() - ys.min()) / 2)
-    _, xss = zip(*grid[grid["west_valid2"]].groupby("row")["west_x_first"])
-    rx_west = np.ceil(np.max([np.max(xs) - np.min(xs) for xs in xss]) / 2)
-    r_west = max(ry_west, rx_west)
+    if np.any(grid["west_valid2"]):
+        ys = grid[grid["west_valid2"]]["west_y_first"]
+        ry_west = np.ceil((ys.max() - ys.min()) / 2)
+        _, xss = zip(*grid[grid["west_valid2"]].groupby("row")["west_x_first"])
+        rx_west = np.ceil(np.max([np.max(xs) - np.min(xs) for xs in xss]) / 2)
+        r_west = max(ry_west, rx_west)
+    else:
+        r_west = 0  # better than failing
 
     return grid, max(r_north, r_west)
 
