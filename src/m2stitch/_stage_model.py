@@ -323,4 +323,7 @@ def replace_invalid_translations(grid: pd.DataFrame) -> pd.DataFrame:
         isna = pd.isna(grid[key])
         grid.loc[isna, key] = grid.loc[~isna, key].median()
         grid.loc[isna, f"{direction}_ncc_second"] = -1
+    for direction, xy in itertools.product(["north", "west"], ["x", "y"]):
+        assert np.all(np.isfinite(grid[f"{direction}_{xy}_second"]))
+                
     return grid
