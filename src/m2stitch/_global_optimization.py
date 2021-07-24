@@ -6,7 +6,7 @@ from ._typing_utils import Int
 
 
 def compute_maximum_spanning_tree(grid: pd.DataFrame) -> nx.Graph:
-    """Compute the maximum spanning tree to solve the overconstraint problem of grid position determination.
+    """Compute the maximum spanning tree for grid position determination.
 
     Parameters
     ----------

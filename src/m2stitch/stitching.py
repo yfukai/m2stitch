@@ -1,3 +1,4 @@
+"""This module provides microscope image stitching with the algorithm by MIST."""
 from typing import Any
 from typing import Sequence
 from typing import Tuple
