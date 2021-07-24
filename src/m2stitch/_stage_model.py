@@ -66,7 +66,7 @@ def compute_image_overlap(
     W: Int,
     H: Int,
     max_stall_count: Int = 100,
-    prob_uniform_threshold: Float = 90,
+    prob_uniform_threshold: Float = 80,
 ) -> Tuple[float, ...]:
     """Compute the value of the image overlap.
 
@@ -83,7 +83,7 @@ def compute_image_overlap(
     max_stall_count : Int, optional
         the maximum count of optimization, by default 100
     prob_uniform_threshold : Float, optional
-        the threshold for the probabillity for uniform error, by default 90
+        the threshold for the probabillity for uniform error, by default 80
 
     Returns
     -------
