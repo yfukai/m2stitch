@@ -1,11 +1,17 @@
 import itertools
+from typing import Tuple
 
 import numpy as np
+import numpy.typing as npt
+
+from ._typing_utils import Float
+from ._typing_utils import FloatArray
+from ._typing_utils import Int
+from ._typing_utils import NumArray
 
 
-def pcm(image1, image2):
-    """
-    compute peak correlation matrix for two images
+def pcm(image1: NumArray, image2: NumArray) -> FloatArray:
+    """Compute peak correlation matrix for two images.
 
     Parameters
     ---------
@@ -19,7 +25,6 @@ def pcm(image1, image2):
     -------
     PCM : np.ndarray
         the peak correlation matrix
-
     """
     assert image1.ndim == 2
     assert image2.ndim == 2
@@ -27,18 +32,19 @@ def pcm(image1, image2):
     F1 = np.fft.fft2(image1)
     F2 = np.fft.fft2(image2)
     FC = F1 * np.conjugate(F2)
-    return np.fft.ifft2(FC / np.abs(FC)).real
+    return np.fft.ifft2(FC / np.abs(FC)).real.astype(np.float32)
 
 
-def multi_peak_max(PCM, n=2):
-    """
-    find the first to n th largest peaks in PCM
+def multi_peak_max(
+    PCM: FloatArray, n: int = 2
+) -> Tuple[FloatArray, FloatArray, FloatArray]:
+    """Find the first to n th largest peaks in PCM.
 
     Parameters
     ---------
     PCM : np.ndarray
         the peak correlation matrix
-    n : int
+    n : Int
         the number of the peaks
 
 
@@ -50,15 +56,14 @@ def multi_peak_max(PCM, n=2):
         the column indices for the peaks
     vals : np.ndarray
         the values of the peaks
-
     """
     row, col = np.unravel_index(np.argsort(PCM.ravel()), PCM.shape)
-    return row[-n:][::-1], col[-n:][::-1], PCM[row[-n:][::-1], col[-n:][::-1]]
+    vals = PCM[row[-n:][::-1], col[-n:][::-1]]
+    return row[-n:][::-1], col[-n:][::-1], vals
 
 
-def ncc(image1, image2):
-    """
-    compute the normalized cross correlation for two images
+def ncc(image1: NumArray, image2: NumArray) -> Float:
+    """Compute the normalized cross correlation for two images.
 
     Parameters
     ---------
@@ -70,9 +75,8 @@ def ncc(image1, image2):
 
     Returns
     -------
-    ncc : float
+    ncc : Float
         the normalized cross correlation
-
     """
     assert image1.ndim == 2
     assert image2.ndim == 2
@@ -84,18 +88,58 @@ def ncc(image1, image2):
     return n / d
 
 
-def extract_overlap_subregion(image, x, y):
+def extract_overlap_subregion(image: NumArray, x: Int, y: Int) -> NumArray:
+    """Extract the overlapping subregion of the image.
+
+    Parameters
+    ---------
+    image : np.ndarray
+        the image (the dimension must be 2)
+    x : Int
+        the x position
+    y : Int
+        the y position
+
+    Returns
+    -------
+    subimage : np.ndarray
+        the extracted subimage
+    """
     W = image.shape[0]
     H = image.shape[1]
     assert (np.abs(x) < W) and (np.abs(y) < H)
-    xstart = max(0, min(x, W))
-    xend = max(0, min(x + W, W))
-    ystart = max(0, min(y, H))
-    yend = max(0, min(y + H, H))
+    xstart = int(max(0, min(x, W, key=int), key=int))
+    xend = int(max(0, min(x + W, W, key=int), key=int))
+    ystart = int(max(0, min(y, H, key=int), key=int))
+    yend = int(max(0, min(y + H, H, key=int), key=int))
     return image[xstart:xend, ystart:yend]
 
 
-def interpret_translation(image1, image2, xin, yin):
+def interpret_translation(
+    image1: NumArray, image2: npt.NDArray, xin: Int, yin: Int
+) -> Tuple[float, int, int]:
+    """Interpret the translation to find the translation with heighest ncc.
+
+    Parameters
+    ---------
+    image1 : np.ndarray
+        the first image (the dimension must be 2)
+    image2 : np.ndarray
+        the second image (the dimension must be 2)
+    xin : Int
+        the x position estimated by PCM
+    yin : Int
+        the y position estimated by PCM
+
+    Returns
+    -------
+    _ncc : Float
+        the highest ncc
+    x : Int
+        the selected x position
+    y : Int
+        the selected y position
+    """
     assert image1.ndim == 2
     assert image2.ndim == 2
     assert np.array_equal(image1.shape, image2.shape)
@@ -113,7 +157,7 @@ def interpret_translation(image1, image2, xin, yin):
         subI2 = extract_overlap_subregion(image2, -(xmag * xsign), -(ymag * ysign))
         ncc_val = ncc(subI1, subI2)
         if ncc_val > _ncc:
-            _ncc = ncc_val
-            x = xmag * xsign
-            y = ymag * ysign
+            _ncc = float(ncc_val)
+            x = int(xmag * xsign)
+            y = int(ymag * ysign)
     return _ncc, x, y

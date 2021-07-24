@@ -1,22 +1,35 @@
+"""This module provides microscope image stitching with the algorithm by MIST."""
+from typing import Any
+from typing import Sequence
+from typing import Tuple
+from typing import Union
+
 import numpy as np
 import pandas as pd
 from tqdm import tqdm
 
-from .constrained_refinement import refine_translations
-from .global_optimization import compute_final_position
-from .global_optimization import compute_maximum_spanning_tree
-from .stage_model import compute_image_overlap
-from .stage_model import compute_repeatability
-from .stage_model import filter_by_repeatability
-from .stage_model import replace_invalid_translations
-from .translation_computation import interpret_translation
-from .translation_computation import multi_peak_max
-from .translation_computation import pcm
+from ._constrained_refinement import refine_translations
+from ._global_optimization import compute_final_position
+from ._global_optimization import compute_maximum_spanning_tree
+from ._stage_model import compute_image_overlap
+from ._stage_model import compute_repeatability
+from ._stage_model import filter_by_repeatability
+from ._stage_model import replace_invalid_translations
+from ._translation_computation import interpret_translation
+from ._translation_computation import multi_peak_max
+from ._translation_computation import pcm
+from ._typing_utils import Float
+from ._typing_utils import NumArray
 
 
-def stitch_images(images, rows, cols, pou=3, full_output=False):
-    """
-    compute image positions for stitching
+def stitch_images(
+    images: Union[Sequence[NumArray], NumArray],
+    rows: Sequence[Any],
+    cols: Sequence[Any],
+    pou: Float = 3,
+    full_output: bool = False,
+) -> Tuple[pd.DataFrame, dict]:
+    """Compute image positions for stitching.
 
     Parameters
     ---------
@@ -29,7 +42,7 @@ def stitch_images(images, rows, cols, pou=3, full_output=False):
     cols : list
         the col indices of the images
 
-    pou : float, default 3
+    pou : Float, default 3
         the "percent overlap uncertainty" parameter
 
     full_output : bool, default False
@@ -43,9 +56,7 @@ def stitch_images(images, rows, cols, pou=3, full_output=False):
 
     prop_dict : dict
         the dict of estimated parameters. (to be documented)
-
     """
-
     images = np.array(images)
     assert images.shape[0] == len(rows)
     assert images.shape[0] == len(cols)
@@ -88,7 +99,7 @@ def stitch_images(images, rows, cols, pou=3, full_output=False):
             found_peaks = list(zip(*multi_peak_max(PCM)))
 
             interpreted_peaks = []
-            for r, c, v in found_peaks:
+            for r, c, _ in found_peaks:
                 interpreted_peaks.append(interpret_translation(image1, image2, r, c))
             max_peak = interpreted_peaks[np.argmax(np.array(interpreted_peaks)[:, 0])]
             for j, key in enumerate(["ncc", "x", "y"]):
