@@ -22,7 +22,7 @@ M2Stitch
 .. |Tests| image:: https://github.com/yfukai/m2stitch/workflows/Tests/badge.svg
    :target: https://github.com/yfukai/m2stitch/actions?workflow=Tests
    :alt: Tests
-.. |Codecov| image:: https://codecov.io/gh/yfukai/m2stitch/branch/main/graph/badge.svg
+.. |Codecov| image:: https://codecov.io/gh/yfukai/m2stitch/branch/master/graph/badge.svg
    :target: https://codecov.io/gh/yfukai/m2stitch
    :alt: Codecov
 .. |pre-commit| image:: https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white
