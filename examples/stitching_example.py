@@ -3,6 +3,7 @@ from os import path
 
 import numpy as np
 import pandas as pd
+
 import m2stitch
 
 script_path = path.dirname(path.realpath(__file__))
@@ -33,18 +34,18 @@ print(result_df["y_pos"])
 result_df["x_pos2"] = result_df["x_pos"] - result_df["x_pos"].min()
 result_df["y_pos2"] = result_df["y_pos"] - result_df["y_pos"].min()
 
-sizeX = images.shape[1]
-sizeY = images.shape[2]
+size_x = images.shape[1]
+size_y = images.shape[2]
 
 stitched_image_size = (
-    result_df["x_pos2"].max() + sizeX,
-    result_df["y_pos2"].max() + sizeY,
+    result_df["x_pos2"].max() + size_x,
+    result_df["y_pos2"].max() + size_y,
 )
 stitched_image = np.zeros_like(images, shape=stitched_image_size)
 for i, row in result_df.iterrows():
     stitched_image[
-        row["x_pos2"] : row["x_pos2"] + sizeX,
-        row["y_pos2"] : row["y_pos2"] + sizeY,
+        row["x_pos2"] : row["x_pos2"] + size_x,
+        row["y_pos2"] : row["y_pos2"] + size_y,
     ] = images[i]
 
 result_image_file_path = path.join(script_path, "stitched_image.npy")
