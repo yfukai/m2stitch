@@ -79,6 +79,8 @@ please `file an issue`_ along with a detailed description.
 Credits
 -------
 
+This program is an unofficial implementation of _MIST stitching algorithm.
+
 This project was generated from `@cjolowicz`_'s `Hypermodern Python Cookiecutter`_ template.
 
 .. _MIST: https://pages.nist.gov/MIST
