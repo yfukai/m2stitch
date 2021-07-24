@@ -174,7 +174,10 @@ def filter_outliers(T: pd.Series, isvalid: pd.Series, w: Float = 1.5) -> pd.Seri
     isvalid : pd.Series
         whether the translation is within the estimated limit
     """
-    q1, _, q3 = np.quantile(T[isvalid].values, (0.25, 0.5, 0.75))
+    valid_T = T[isvalid].values
+    if len(valid_T) < 1:
+        return isvalid & False
+    q1, _, q3 = np.quantile(valid_T, (0.25, 0.5, 0.75))
     iqd = max(1, np.abs(q3 - q1))
     return isvalid & T.between(q1 - w * iqd, q3 + w * iqd)
 
