@@ -36,7 +36,7 @@ M2Stitch
 Features
 --------
 
-- Provides robust stitching of tiled microscope images, following algorithm by MIST_.
+- Provides robust stitching of tiled microscope images, mostly following algorithm by MIST_. 
 - Supports irregular-shaped connected tiles.
 
 Installation
@@ -79,11 +79,13 @@ please `file an issue`_ along with a detailed description.
 Credits
 -------
 
-This program is an unofficial implementation of MIST_ stitching algorithm.
+This program is an unofficial implementation of MIST_ stitching algorithm on GitHub_. The original paper is here_.
 
 This project was generated from `@cjolowicz`_'s `Hypermodern Python Cookiecutter`_ template.
 
 .. _MIST: https://pages.nist.gov/MIST
+.. _GitHub: https://github.com/usnistgov/MIST
+.. _here: https://github.com/USNISTGOV/MIST/wiki/assets/mist-algorithm-documentation.pdf
 .. _@cjolowicz: https://github.com/cjolowicz
 .. _Cookiecutter: https://github.com/audreyr/cookiecutter
 .. _MIT license: https://opensource.org/licenses/MIT
