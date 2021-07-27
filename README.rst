@@ -5,7 +5,7 @@ M2Stitch
 
 |Read the Docs| |Tests| |Codecov|
 
-|pre-commit| |Black|
+|pre-commit| |Black| |Zenodo|
 
 .. |PyPI| image:: https://img.shields.io/pypi/v/m2stitch.svg
    :target: https://pypi.org/project/m2stitch/
