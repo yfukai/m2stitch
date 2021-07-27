@@ -31,6 +31,9 @@ M2Stitch
 .. |Black| image:: https://img.shields.io/badge/code%20style-black-000000.svg
    :target: https://github.com/psf/black
    :alt: Black
+.. |Zenodo| image:: https://zenodo.org/badge/DOI/10.5281/zenodo.5139597.svg
+   :target: https://doi.org/10.5281/zenodo.5139597
+   :alt: Zenodo
 
 
 Features
