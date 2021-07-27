@@ -36,8 +36,8 @@ M2Stitch
 Features
 --------
 
-- Provides robust stitching of tiled microscope images, mostly following algorithm by MIST_.
-- Supports irregular-shaped connected tiles.
+- Provides robust stitching of tiled microscope images on a regular grid, mostly following algorithm by MIST_.
+- Supports missing tiles.
 
 Installation
 ------------
