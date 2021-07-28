@@ -35,7 +35,7 @@ M2Stitch
    :target: https://doi.org/10.5281/zenodo.5139597
    :alt: Zenodo
 
-Note: one might also be interested in another Python-written stitching tool
+**Note** :memo: : one might also be interested in another Python-written stitching tool
 ASHLAR_ (bioRxiv_),
 with a comparable performance to that of MIST and additional features.
 
