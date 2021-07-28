@@ -36,8 +36,11 @@ M2Stitch
    :alt: Zenodo
 
 Note: one might also be interested in another Python-written stitching tool
-[ASHLAR](https://github.com/labsyspharm/ashlar) ([bioRxiv](https://www.biorxiv.org/content/10.1101/2021.04.20.440625v1)),
+ASHLAR_ (bioRxiv_),
 with a comparable performance to that of MIST and additional features.
+
+.. _ASHLAR: https://github.com/labsyspharm/ashlar
+.. _bioRxiv: https://www.biorxiv.org/content/10.1101/2021.04.20.440625v1
 
 Features
 --------
