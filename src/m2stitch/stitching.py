@@ -79,15 +79,15 @@ def stitch_images(
         else:
             return None
 
-    grid["north"] = grid.apply(
+    grid["top"] = grid.apply(
         lambda g: get_index(g["row"] - 1, g["col"]), axis=1
     ).astype(pd.Int32Dtype())
-    grid["west"] = grid.apply(
+    grid["left"] = grid.apply(
         lambda g: get_index(g["row"], g["col"] - 1), axis=1
     ).astype(pd.Int32Dtype())
 
     ###### translationComputation ######
-    for direction in ["north", "west"]:
+    for direction in ["top", "left"]:
         for i2, g in tqdm(grid.iterrows(), total=len(grid)):
             i1 = g[direction]
             if pd.isna(i1):
@@ -105,9 +105,9 @@ def stitch_images(
             for j, key in enumerate(["ncc", "x", "y"]):
                 grid.loc[i2, f"{direction}_{key}_first"] = max_peak[j]
 
-    prob_uniform_n, mu_n, sigma_n = compute_image_overlap(grid, "north", W, H)
+    prob_uniform_n, mu_n, sigma_n = compute_image_overlap(grid, "top", W, H)
     overlap_n = 100 - mu_n
-    prob_uniform_w, mu_w, sigma_w = compute_image_overlap(grid, "west", W, H)
+    prob_uniform_w, mu_w, sigma_w = compute_image_overlap(grid, "left", W, H)
     overlap_w = 100 - mu_w
 
     overlap_n = np.clip(overlap_n, pou, 100 - pou)
@@ -125,14 +125,14 @@ def stitch_images(
     prop_dict = {
         "W": W,
         "H": H,
-        "overlap_north": overlap_n,
-        "overlap_west": overlap_w,
-        "overlap_north_results": {
+        "overlap_top": overlap_n,
+        "overlap_left": overlap_w,
+        "overlap_top_results": {
             "prob_uniform": prob_uniform_n,
             "mu": mu_n,
             "sigma": sigma_n,
         },
-        "overlap_west_results": {
+        "overlap_left_results": {
             "prob_uniform": prob_uniform_w,
             "mu": mu_w,
             "sigma": sigma_w,
