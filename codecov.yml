@@ -6,4 +6,4 @@ coverage:
         target: "90"
     patch:
       default:
-        target: "90"
+        target: "80"
