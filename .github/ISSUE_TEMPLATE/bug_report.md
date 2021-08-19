@@ -10,7 +10,7 @@ Steps to reproduce the behavior:
 
 1.
 2.
-3. 
+3.
 4.
 
 **Expected behavior**
@@ -22,7 +22,6 @@ A clear and concise description of what you expected to happen.
 If applicable, add screenshots to help explain your problem.
 
 **Environment**
-
 
 **Additional context**
 
