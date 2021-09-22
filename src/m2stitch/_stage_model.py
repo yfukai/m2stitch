@@ -124,7 +124,9 @@ def compute_image_overlap(
                     return tuple(map(float, model["x"]))
                 elif model["fun"] < best_model["fun"]:
                     best_model = model
-    assert not best_model is None
+    assert (
+        not best_model is None
+    ), "Overlap model estimation failed, try raising the value of overlap_prob_uniform_threshold"  # noqa :
     #    best_model_params : Tuple[Float,Float,Float] = tuple(best_model["x"])
     assert len(best_model["x"]) == 3
     return tuple(map(float, best_model["x"]))
