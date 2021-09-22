@@ -66,6 +66,7 @@ def stitch_images(
     images = np.array(images)
     assert images.shape[0] == len(rows)
     assert images.shape[0] == len(cols)
+    assert 0 <= overlap_prob_uniform_threshold and overlap_prob_uniform_threshold <= 100
 
     W, H = images.shape[1:]
 
