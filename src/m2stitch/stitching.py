@@ -27,6 +27,7 @@ def stitch_images(
     rows: Sequence[Any],
     cols: Sequence[Any],
     pou: Float = 3,
+    overlap_prob_uniform_threshold: Float = 80,
     full_output: bool = False,
 ) -> Tuple[pd.DataFrame, dict]:
     """Compute image positions for stitching.
@@ -44,6 +45,11 @@ def stitch_images(
 
     pou : Float, default 3
         the "percent overlap uncertainty" parameter
+
+    overlap_prob_uniform_threshold : Float, default 80
+        the upper threshold for "uniform probability".
+        raise this value to ease assumption
+        that the displacement is following non-uniform distribution.
 
     full_output : bool, default False
         if True, returns the full computation result in the pd.DataFrame
@@ -105,9 +111,13 @@ def stitch_images(
             for j, key in enumerate(["ncc", "x", "y"]):
                 grid.loc[i2, f"{direction}_{key}_first"] = max_peak[j]
 
-    prob_uniform_n, mu_n, sigma_n = compute_image_overlap(grid, "top", W, H)
+    prob_uniform_n, mu_n, sigma_n = compute_image_overlap(
+        grid, "top", W, H, prob_uniform_threshold=overlap_prob_uniform_threshold
+    )
     overlap_n = 100 - mu_n
-    prob_uniform_w, mu_w, sigma_w = compute_image_overlap(grid, "left", W, H)
+    prob_uniform_w, mu_w, sigma_w = compute_image_overlap(
+        grid, "left", W, H, prob_uniform_threshold=overlap_prob_uniform_threshold
+    )
     overlap_w = 100 - mu_w
 
     overlap_n = np.clip(overlap_n, pou, 100 - pou)
