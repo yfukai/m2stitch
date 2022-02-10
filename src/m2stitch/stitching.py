@@ -107,7 +107,7 @@ def stitch_images(
     assert 0 <= overlap_diff_threshold and overlap_diff_threshold <= 100
     _cols, _rows = position_indices.T
 
-    W, H = images.shape[1:]
+    sizeY, sizeX = images.shape[1:]
 
     grid = pd.DataFrame(
         {
@@ -165,18 +165,22 @@ def stitch_images(
                 grid.loc[i2, f"{direction}_{key}_first"] = max_peak[j]
 
     prob_uniform_n, mu_n, sigma_n = compute_image_overlap(
-        grid, "top", W, H, prob_uniform_threshold=overlap_prob_uniform_threshold
+        grid, "top", sizeY, sizeX, prob_uniform_threshold=overlap_prob_uniform_threshold
     )
     overlap_n = 100 - mu_n
     prob_uniform_w, mu_w, sigma_w = compute_image_overlap(
-        grid, "left", W, H, prob_uniform_threshold=overlap_prob_uniform_threshold
+        grid,
+        "left",
+        sizeY,
+        sizeX,
+        prob_uniform_threshold=overlap_prob_uniform_threshold,
     )
     overlap_w = 100 - mu_w
 
     overlap_n = np.clip(overlap_n, pou, 100 - pou)
     overlap_w = np.clip(overlap_w, pou, 100 - pou)
 
-    grid, r = compute_repeatability(grid, overlap_n, overlap_w, W, H, pou)
+    grid, r = compute_repeatability(grid, overlap_n, overlap_w, sizeY, sizeX, pou)
     grid = filter_by_repeatability(grid, r)
     grid = replace_invalid_translations(grid)
 
@@ -186,8 +190,8 @@ def stitch_images(
     grid = compute_final_position(grid, tree)
 
     prop_dict = {
-        "W": W,
-        "H": H,
+        "W": sizeY,
+        "H": sizeX,
         "overlap_top": overlap_n,
         "overlap_left": overlap_w,
         "overlap_top_results": {

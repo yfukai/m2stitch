@@ -106,13 +106,13 @@ def extract_overlap_subregion(image: NumArray, x: Int, y: Int) -> NumArray:
     subimage : np.ndarray
         the extracted subimage
     """
-    W = image.shape[0]
-    H = image.shape[1]
-    assert (np.abs(x) < W) and (np.abs(y) < H)
-    xstart = int(max(0, min(x, W, key=int), key=int))
-    xend = int(max(0, min(x + W, W, key=int), key=int))
-    ystart = int(max(0, min(y, H, key=int), key=int))
-    yend = int(max(0, min(y + H, H, key=int), key=int))
+    sizeY = image.shape[0]
+    sizeX = image.shape[1]
+    assert (np.abs(x) < sizeY) and (np.abs(y) < sizeX)
+    xstart = int(max(0, min(x, sizeY, key=int), key=int))
+    xend = int(max(0, min(x + sizeY, sizeY, key=int), key=int))
+    ystart = int(max(0, min(y, sizeX, key=int), key=int))
+    yend = int(max(0, min(y + sizeX, sizeX, key=int), key=int))
     return image[xstart:xend, ystart:yend]
 
 
@@ -147,12 +147,12 @@ def interpret_translation(
     _ncc = -np.infty
     x = 0
     y = 0
-    W = image1.shape[0]
-    H = image1.shape[1]
-    assert 0 <= xin and xin < W
-    assert 0 <= yin and yin < H
-    xmags = [xin, W - xin] if xin > 0 else [xin]
-    ymags = [yin, H - yin] if yin > 0 else [yin]
+    sizeY = image1.shape[0]
+    sizeX = image1.shape[1]
+    assert 0 <= xin and xin < sizeY
+    assert 0 <= yin and yin < sizeX
+    xmags = [xin, sizeY - xin] if xin > 0 else [xin]
+    ymags = [yin, sizeX - yin] if yin > 0 else [yin]
     for xmag, ymag, xsign, ysign in itertools.product(xmags, ymags, [-1, +1], [-1, +1]):
         subI1 = extract_overlap_subregion(image1, (xmag * xsign), (ymag * ysign))
         subI2 = extract_overlap_subregion(image2, -(xmag * xsign), -(ymag * ysign))

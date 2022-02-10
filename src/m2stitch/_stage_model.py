@@ -63,8 +63,8 @@ def compute_inv_liklihood(
 def compute_image_overlap(
     grid: pd.DataFrame,
     direction: str,
-    W: Int,
-    H: Int,
+    sizeY: Int,
+    sizeX: Int,
     max_stall_count: Int = 100,
     prob_uniform_threshold: Float = 80,
 ) -> Tuple[float, ...]:
@@ -76,9 +76,9 @@ def compute_image_overlap(
         the dataframe for the grid position, with columns "{top|left}_{x|y}_first"
     direction : str
         the direction of the overlap, either of "top" or "left"
-    W : Int
+    sizeY : Int
         the image width
-    H : Int
+    sizeX : Int
         the image height
     max_stall_count : Int, optional
         the maximum count of optimization, by default 100
@@ -96,9 +96,9 @@ def compute_image_overlap(
         when direction is not in ["top","left"], raises ValueError
     """
     if direction == "top":
-        T = grid["top_y_first"].values / H * 100
+        T = grid["top_y_first"].values / sizeX * 100
     elif direction == "left":
-        T = grid["left_x_first"].values / W * 100
+        T = grid["left_x_first"].values / sizeY * 100
     else:
         raise ValueError("direction must be either of top or left")
     T = T[np.isfinite(T)]
@@ -185,7 +185,12 @@ def filter_outliers(T: pd.Series, isvalid: pd.Series, w: Float = 1.5) -> pd.Seri
 
 
 def compute_repeatability(
-    grid: pd.DataFrame, overlap_n: Float, overlap_w: Float, W: Int, H: Int, pou: Float
+    grid: pd.DataFrame,
+    overlap_n: Float,
+    overlap_w: Float,
+    sizeY: Int,
+    sizeX: Int,
+    pou: Float,
 ) -> Tuple[pd.DataFrame, Float]:
     """Compute the repeatability of the stage motion.
 
@@ -197,9 +202,9 @@ def compute_repeatability(
         the estimated overlap for top direction
     overlap_w : Float
         the estimated overlap for left direction
-    W : Int
+    sizeY : Int
         the width of the height images
-    H : Int
+    sizeX : Int
         the width of the tile images
     pou : Float
         the percentile margin for error, by default 3
@@ -212,10 +217,10 @@ def compute_repeatability(
         the repeatability of the stage motion
     """
     grid["top_valid1"] = filter_by_overlap_and_correlation(
-        grid["top_y_first"], grid["top_ncc_first"], overlap_n, H, pou
+        grid["top_y_first"], grid["top_ncc_first"], overlap_n, sizeX, pou
     )
     grid["left_valid1"] = filter_by_overlap_and_correlation(
-        grid["left_x_first"], grid["left_ncc_first"], overlap_w, W, pou
+        grid["left_x_first"], grid["left_ncc_first"], overlap_w, sizeY, pou
     )
     grid["top_valid2"] = filter_outliers(grid["top_y_first"], grid["top_valid1"])
     grid["left_valid2"] = filter_outliers(grid["left_x_first"], grid["left_valid1"])

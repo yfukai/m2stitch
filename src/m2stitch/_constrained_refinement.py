@@ -90,7 +90,7 @@ def refine_translations(images: NumArray, grid: pd.DataFrame, r: Float) -> pd.Da
                 continue
             image1 = images[i1]
             image2 = images[i2]
-            W, H = image1.shape
+            sizeY, sizeX = image1.shape
 
             def overlap_ncc(params):
                 x, y = params
@@ -103,8 +103,14 @@ def refine_translations(images: NumArray, grid: pd.DataFrame, r: Float) -> pd.Da
                 int(g[f"{direction}_y_second"]),
             ]
             limits = [
-                [max(-W + 1, init_values[0] - r), min(W - 1, init_values[0] + r)],
-                [max(-H + 1, init_values[1] - r), min(H - 1, init_values[1] + r)],
+                [
+                    max(-sizeY + 1, init_values[0] - r),
+                    min(sizeY - 1, init_values[0] + r),
+                ],
+                [
+                    max(-sizeX + 1, init_values[1] - r),
+                    min(sizeX - 1, init_values[1] + r),
+                ],
             ]
             values, ncc_value = find_local_max_integer_constrained(
                 overlap_ncc, np.array(init_values), np.array(limits)
