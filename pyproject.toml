@@ -24,7 +24,7 @@ classifiers = [
 Changelog = "https://github.com/yfukai/m2stitch/releases"
 
 [tool.poetry.dependencies]
-python = ">=3.8,<=3.10"
+python = ">=3.8,<3.11"
 click = ">=7,<9"
 numpy = "^1.22"
 pandas = "^1.2.4"
