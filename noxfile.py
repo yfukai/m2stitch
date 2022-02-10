@@ -83,26 +83,26 @@ def activate_virtualenv_in_precommit_hooks(session: Session) -> None:
         hook.write_text("\n".join(lines))
 
 
-@session(name="pre-commit", python="3.9")
-def precommit(session: Session) -> None:
-    """Lint using pre-commit."""
-    args = session.posargs or ["run", "--all-files", "--show-diff-on-failure"]
-    session.install(
-        "black",
-        "darglint",
-        "flake8",
-        "flake8-bandit",
-        "flake8-bugbear",
-        "flake8-docstrings",
-        "flake8-rst-docstrings",
-        "pep8-naming",
-        "pre-commit",
-        "pre-commit-hooks",
-        "reorder-python-imports",
-    )
-    session.run("pre-commit", *args)
-    if args and args[0] == "install":
-        activate_virtualenv_in_precommit_hooks(session)
+# @session(name="pre-commit", python="3.9")
+# def precommit(session: Session) -> None:
+#    """Lint using pre-commit."""
+#    args = session.posargs or ["run", "--all-files", "--show-diff-on-failure"]
+#    session.install(
+#        "black",
+#        "darglint",
+#        "flake8",
+#        "flake8-bandit",
+#        "flake8-bugbear",
+#        "flake8-docstrings",
+#        "flake8-rst-docstrings",
+#        "pep8-naming",
+#        "pre-commit",
+#        "pre-commit-hooks",
+#        "reorder-python-imports",
+#    )
+#    session.run("pre-commit", *args)
+#    if args and args[0] == "install":
+#        activate_virtualenv_in_precommit_hooks(session)
 
 
 @session(python="3.9")

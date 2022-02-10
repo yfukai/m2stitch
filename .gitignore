@@ -7,3 +7,6 @@
 /docs/_build/
 /src/*.egg-info/
 __pycache__/
+tests/data/testimages_lowncc.npy
+tests/data/testimages_lowncc2.npy
+tests/data/testimages_lowncc2.csv
