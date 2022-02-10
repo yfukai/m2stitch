@@ -58,7 +58,7 @@ def multi_peak_max(
         the values of the peaks
     """
     row, col = np.unravel_index(np.argsort(PCM.ravel()), PCM.shape)
-    vals = PCM[row[-n:][::-1], col[-n:][::-1]]
+    vals: FloatArray = PCM[row[-n:][::-1], col[-n:][::-1]]
     return row[-n:][::-1], col[-n:][::-1], vals
 
 
