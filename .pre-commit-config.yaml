@@ -1,51 +1,33 @@
 repos:
-  - repo: local
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v2.3.0
+    hooks:
+      - id: check-yaml
+      - id: check-toml
+      - id: detect-private-key
+      #      - id: name-tests-test
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+      - id: check-added-large-files
+  - repo: https://github.com/psf/black
+    rev: 21.12b0
     hooks:
       - id: black
-        name: black
-        entry: black
-        language: system
-        types: [python]
-        require_serial: true
-      - id: check-added-large-files
-        name: Check for added large files
-        entry: check-added-large-files
-        language: system
-      - id: check-toml
-        name: Check Toml
-        entry: check-toml
-        language: system
-        types: [toml]
-      - id: check-yaml
-        name: Check Yaml
-        entry: check-yaml
-        language: system
-        types: [yaml]
-      - id: end-of-file-fixer
-        name: Fix End of Files
-        entry: end-of-file-fixer
-        language: system
-        types: [text]
-        stages: [commit, push, manual]
+  - repo: https://github.com/PyCQA/flake8
+    rev: 4.0.1
+    hooks:
       - id: flake8
-        name: flake8
-        entry: flake8
-        language: system
         types: [python]
         require_serial: true
+  - repo: https://github.com/asottile/reorder_python_imports
+    rev: v2.7.1
+    hooks:
       - id: reorder-python-imports
         name: Reorder python imports
         entry: reorder-python-imports
-        language: system
         types: [python]
         args: [--application-directories=src]
-      - id: trailing-whitespace
-        name: Trim Trailing Whitespace
-        entry: trailing-whitespace-fixer
-        language: system
-        types: [text]
-        stages: [commit, push, manual]
-  - repo: https://github.com/prettier/pre-commit
-    rev: v2.1.2
+  - repo: https://github.com/pre-commit/mirrors-prettier
+    rev: v2.3.0
     hooks:
       - id: prettier

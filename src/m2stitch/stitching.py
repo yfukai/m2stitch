@@ -1,5 +1,7 @@
 """This module provides microscope image stitching with the algorithm by MIST."""
+import warnings
 from typing import Any
+from typing import Optional
 from typing import Sequence
 from typing import Tuple
 from typing import Union
@@ -24,11 +26,13 @@ from ._typing_utils import NumArray
 
 def stitch_images(
     images: Union[Sequence[NumArray], NumArray],
-    rows: Sequence[Any],
-    cols: Sequence[Any],
+    rows: Optional[Sequence[Any]] = None,
+    cols: Optional[Sequence[Any]] = None,
+    position_indices: Optional[NumArray] = None,
     pou: Float = 3,
     overlap_prob_uniform_threshold: Float = 80,
     full_output: bool = False,
+    row_col_transpose: bool = True,
 ) -> Tuple[pd.DataFrame, dict]:
     """Compute image positions for stitching.
 
@@ -37,11 +41,16 @@ def stitch_images(
     images : np.ndarray
         the images to stitch.
 
-    rows : list
-        the row indices of the images
+    rows : list, optional
+        the row indices (tile position in the last dimension) of the images.
 
-    cols : list
-        the col indices of the images
+    cols : list, optional
+        the column indices (tile position in the second last dimension) of the images
+
+    position_indices : np.ndarray, optional
+        the tile position indices in each dimension.
+        the dimensions corresponds to (image, index)
+        ignored if rows and cols are not None.
 
     pou : Float, default 3
         the "percent overlap uncertainty" parameter
@@ -52,7 +61,11 @@ def stitch_images(
         that the displacement is following non-uniform distribution.
 
     full_output : bool, default False
-        if True, returns the full computation result in the pd.DataFrame
+        if True, returns the full comptutation result in the pd.DataFrame
+
+    row_col_transpose : bool, default True
+        if True, row and col indices are switched.
+        only for compatibility and the default value will be False in the future.
 
     Returns
     -------
@@ -64,18 +77,29 @@ def stitch_images(
         the dict of estimated parameters. (to be documented)
     """
     images = np.array(images)
-    assert images.shape[0] == len(rows)
-    assert images.shape[0] == len(cols)
+    assert (position_indices is not None) or (rows is not None and cols is not None)
+    if position_indices is None:
+        if row_col_transpose:
+            warnings.warn(
+                "row_col_transpose is True. The default value will be changed to False in the major release."
+            )
+            position_indices = np.array([rows, cols]).T
+        else:
+            position_indices = np.array([cols, rows]).T
+    position_indices = np.array(position_indices)
+    assert images.shape[0] == position_indices.shape[0]
+    assert position_indices.shape[1] == images.ndim - 1
     assert 0 <= overlap_prob_uniform_threshold and overlap_prob_uniform_threshold <= 100
+    _rows, _cols = position_indices.T
 
     W, H = images.shape[1:]
 
     grid = pd.DataFrame(
         {
-            "row": rows,
-            "col": cols,
+            "row": _rows,
+            "col": _cols,
         },
-        index=np.arange(len(rows)),
+        index=np.arange(len(_rows)),
     )
 
     def get_index(row, col):
@@ -153,4 +177,4 @@ def stitch_images(
     if full_output:
         return grid, prop_dict
     else:
-        return grid[["row", "col", "x_pos", "y_pos"]], prop_dict
+        return grid[["col", "row", "y_pos", "x_pos"]], prop_dict
