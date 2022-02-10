@@ -1,6 +1,7 @@
 """This module provides microscope image stitching with the algorithm by MIST."""
 import warnings
 from typing import Any
+from typing import Optional
 from typing import Sequence
 from typing import Tuple
 from typing import Union
@@ -25,9 +26,9 @@ from ._typing_utils import NumArray
 
 def stitch_images(
     images: Union[Sequence[NumArray], NumArray],
-    rows: Sequence[Any] = None,
-    cols: Sequence[Any] = None,
-    position_indices: Union[Sequence[NumArray], NumArray] = None,
+    rows: Optional[Sequence[Any]] = None,
+    cols: Optional[Sequence[Any]] = None,
+    position_indices: Optional[Union[Sequence[NumArray], NumArray]] = None,
     pou: Float = 3,
     overlap_prob_uniform_threshold: Float = 80,
     full_output: bool = False,
@@ -177,4 +178,4 @@ def stitch_images(
     if full_output:
         return grid, prop_dict
     else:
-        return grid[["row", "col", "x_pos", "y_pos"]], prop_dict
+        return grid[["col", "row", "y_pos", "x_pos"]], prop_dict
