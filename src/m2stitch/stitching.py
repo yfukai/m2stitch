@@ -28,7 +28,7 @@ def stitch_images(
     images: Union[Sequence[NumArray], NumArray],
     rows: Optional[Sequence[Any]] = None,
     cols: Optional[Sequence[Any]] = None,
-    position_indices: Optional[Union[Sequence[NumArray], NumArray]] = None,
+    position_indices: Optional[NumArray] = None,
     pou: Float = 3,
     overlap_prob_uniform_threshold: Float = 80,
     full_output: bool = False,
@@ -43,15 +43,14 @@ def stitch_images(
 
     rows : list, optional
         the row indices (tile position in the last dimension) of the images.
-        ignored if position_indices is not None.
 
     cols : list, optional
         the column indices (tile position in the second last dimension) of the images
-        ignored if position_indices is not None.
 
     position_indices : np.ndarray, optional
         the tile position indices in each dimension.
         the dimensions corresponds to (image, index)
+        ignored if rows and cols are not None.
 
     pou : Float, default 3
         the "percent overlap uncertainty" parameter
@@ -91,16 +90,16 @@ def stitch_images(
     assert images.shape[0] == position_indices.shape[0]
     assert position_indices.shape[1] == images.ndim - 1
     assert 0 <= overlap_prob_uniform_threshold and overlap_prob_uniform_threshold <= 100
-    rows, cols = position_indices.T
+    _rows, _cols = position_indices.T
 
     W, H = images.shape[1:]
 
     grid = pd.DataFrame(
         {
-            "row": rows,
-            "col": cols,
+            "row": _rows,
+            "col": _cols,
         },
-        index=np.arange(len(rows)),
+        index=np.arange(len(_rows)),
     )
 
     def get_index(row, col):
