@@ -1,4 +1,5 @@
 """This module provides microscope image stitching with the algorithm by MIST."""
+import itertools
 import warnings
 from typing import Any
 from typing import Optional
@@ -116,8 +117,8 @@ def stitch_images(
         index=np.arange(len(_cols)),
     )
 
-    def get_index(row, col):
-        df = grid[(grid["col"] == row) & (grid["row"] == col)]
+    def get_index(col, row):
+        df = grid[(grid["col"] == col) & (grid["row"] == row)]
         assert len(df) < 2
         if len(df) == 1:
             return df.index[0]
@@ -130,6 +131,19 @@ def stitch_images(
     grid["left"] = grid.apply(
         lambda g: get_index(g["col"], g["row"] - 1), axis=1
     ).astype(pd.Int32Dtype())
+
+    ### dimension order ... m.y.x
+    if position_initial_guess is not None:
+        for j, dimension in enumerate(["y", "x"]):
+            grid[f"{dimension}_pos_init_guess"] = position_initial_guess[:, j]
+        for direction, dimension in itertools.product(["top", "left"], ["y", "x"]):
+            for ind, g in grid.iterrows():
+                if g[direction] is not None:
+                    g2 = grid.loc[g[direction]]
+                    grid.loc[ind, f"{direction}_{dimension}_init_guess"] = (
+                        g[f"{dimension}_pos_init_guess"]
+                        - g2[f"{dimension}_pos_init_guess"]
+                    )
 
     ###### translationComputation ######
     for direction in ["top", "left"]:
