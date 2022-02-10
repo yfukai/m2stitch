@@ -12,8 +12,8 @@ def main() -> None:
 
 #    testimages, props = test_image_path
 #    """It exits with a status code of zero."""
-#    rows = props["row"].to_list()
-#    cols = props["col"].to_list()
+#    rows = props["col"].to_list()
+#    cols = props["row"].to_list()
 #    result_df, _ = stitch_images(testimages, rows, cols)
 
 

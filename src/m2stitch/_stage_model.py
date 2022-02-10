@@ -223,7 +223,7 @@ def compute_repeatability(
     if np.any(grid["top_valid2"]):
         xs = grid[grid["top_valid2"]]["top_x_first"]
         rx_top = np.ceil((xs.max() - xs.min()) / 2)
-        _, yss = zip(*grid[grid["top_valid2"]].groupby("col")["top_y_first"])
+        _, yss = zip(*grid[grid["top_valid2"]].groupby("row")["top_y_first"])
         ry_top = np.ceil(np.max([np.max(ys) - np.min(ys) for ys in yss]) / 2)
         r_top = max(rx_top, ry_top)
     else:
@@ -232,7 +232,7 @@ def compute_repeatability(
     if np.any(grid["left_valid2"]):
         ys = grid[grid["left_valid2"]]["left_y_first"]
         ry_left = np.ceil((ys.max() - ys.min()) / 2)
-        _, xss = zip(*grid[grid["left_valid2"]].groupby("row")["left_x_first"])
+        _, xss = zip(*grid[grid["left_valid2"]].groupby("col")["left_x_first"])
         rx_left = np.ceil(np.max([np.max(xs) - np.min(xs) for xs in xss]) / 2)
         r_left = max(ry_left, rx_left)
     else:
@@ -256,7 +256,7 @@ def filter_by_repeatability(grid: pd.DataFrame, r: Float) -> pd.DataFrame:
     grid : pd.DataFrame
         the updated dataframe for the grid position
     """
-    for _, grp in grid.groupby("row"):
+    for _, grp in grid.groupby("col"):
         isvalid = grp["top_valid2"].astype(bool)
         if not any(isvalid):
             grid.loc[grp.index, "top_valid3"] = False
@@ -268,7 +268,7 @@ def filter_by_repeatability(grid: pd.DataFrame, r: Float) -> pd.DataFrame:
                 & grp["top_y_first"].between(medy - r, medy + r)
                 & (grp["top_ncc_first"] > 0.5)
             )
-    for _, grp in grid.groupby("col"):
+    for _, grp in grid.groupby("row"):
         isvalid = grp["left_valid2"]
         if not any(isvalid):
             grid.loc[grp.index, "left_valid3"] = False
@@ -303,7 +303,7 @@ def replace_invalid_translations(grid: pd.DataFrame) -> pd.DataFrame:
             grid.loc[isvalid, f"{direction}_{key}_second"] = grid.loc[
                 isvalid, f"{direction}_{key}_first"
             ]
-    for direction, rowcol in zip(["top", "left"], ["row", "col"]):
+    for direction, rowcol in zip(["top", "left"], ["col", "row"]):
         for _, grp in grid.groupby(rowcol):
             isvalid = grp[f"{direction}_valid3"].astype(bool)
             if any(isvalid):

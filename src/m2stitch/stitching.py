@@ -29,6 +29,8 @@ def stitch_images(
     rows: Optional[Sequence[Any]] = None,
     cols: Optional[Sequence[Any]] = None,
     position_indices: Optional[NumArray] = None,
+    position_initial_guess: Optional[NumArray] = None,
+    overlap_diff_threshold: Float = 10,
     pou: Float = 3,
     overlap_prob_uniform_threshold: Float = 80,
     full_output: bool = False,
@@ -51,6 +53,13 @@ def stitch_images(
         the tile position indices in each dimension.
         the dimensions corresponds to (image, index)
         ignored if rows and cols are not None.
+
+    position_initial_guess : np.ndarray, optional
+        the initial guess for the positions of the images, in the unit of pixels.
+
+    overlap_diff_threshold : 10
+        the allowed difference from the initial guess, in percentage of the image size.
+        ignored if position_initial_guess is None
 
     pou : Float, default 3
         the "percent overlap uncertainty" parameter
@@ -89,21 +98,26 @@ def stitch_images(
     position_indices = np.array(position_indices)
     assert images.shape[0] == position_indices.shape[0]
     assert position_indices.shape[1] == images.ndim - 1
+    if position_initial_guess is not None:
+        position_initial_guess = np.array(position_initial_guess)
+        assert images.shape[0] == position_indices.shape[0]
+        assert position_initial_guess.shape[1] == images.ndim - 1
     assert 0 <= overlap_prob_uniform_threshold and overlap_prob_uniform_threshold <= 100
-    _rows, _cols = position_indices.T
+    assert 0 <= overlap_diff_threshold and overlap_diff_threshold <= 100
+    _cols, _rows = position_indices.T
 
     W, H = images.shape[1:]
 
     grid = pd.DataFrame(
         {
-            "row": _rows,
             "col": _cols,
+            "row": _rows,
         },
-        index=np.arange(len(_rows)),
+        index=np.arange(len(_cols)),
     )
 
     def get_index(row, col):
-        df = grid[(grid["row"] == row) & (grid["col"] == col)]
+        df = grid[(grid["col"] == row) & (grid["row"] == col)]
         assert len(df) < 2
         if len(df) == 1:
             return df.index[0]
@@ -111,10 +125,10 @@ def stitch_images(
             return None
 
     grid["top"] = grid.apply(
-        lambda g: get_index(g["row"] - 1, g["col"]), axis=1
+        lambda g: get_index(g["col"] - 1, g["row"]), axis=1
     ).astype(pd.Int32Dtype())
     grid["left"] = grid.apply(
-        lambda g: get_index(g["row"], g["col"] - 1), axis=1
+        lambda g: get_index(g["col"], g["row"] - 1), axis=1
     ).astype(pd.Int32Dtype())
 
     ###### translationComputation ######
@@ -177,4 +191,4 @@ def stitch_images(
     if full_output:
         return grid, prop_dict
     else:
-        return grid[["col", "row", "y_pos", "x_pos"]], prop_dict
+        return grid[["row", "col", "y_pos", "x_pos"]], prop_dict
