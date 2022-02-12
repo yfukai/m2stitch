@@ -155,12 +155,8 @@ def stitch_images(
             image2 = images[i2]
 
             PCM = pcm(image1, image2).real
-            found_peaks = list(zip(*multi_peak_max(PCM)))
-
-            interpreted_peaks = []
-            for r, c, _ in found_peaks:
-                interpreted_peaks.append(interpret_translation(image1, image2, r, c))
-            max_peak = interpreted_peaks[np.argmax(np.array(interpreted_peaks)[:, 0])]
+            yins, xins, _ = multi_peak_max(PCM)
+            max_peak = interpret_translation(image1, image2, yins, xins)
             for j, key in enumerate(["ncc", "x", "y"]):
                 grid.loc[i2, f"{direction}_{key}_first"] = max_peak[j]
 
