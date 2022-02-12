@@ -118,7 +118,7 @@ def extract_overlap_subregion(image: NumArray, y: Int, x: Int) -> NumArray:
 
 
 def interpret_translation(
-    image1: NumArray, image2: npt.NDArray, xin: Int, yin: Int
+    image1: NumArray, image2: npt.NDArray, yin: Int, xin: Int
 ) -> Tuple[float, int, int]:
     """Interpret the translation to find the translation with heighest ncc.
 
@@ -150,16 +150,18 @@ def interpret_translation(
     y = 0
     sizeY = image1.shape[0]
     sizeX = image1.shape[1]
-    assert 0 <= xin and xin < sizeY
-    assert 0 <= yin and yin < sizeX
-    xmags = [xin, sizeY - xin] if xin > 0 else [xin]
-    ymags = [yin, sizeX - yin] if yin > 0 else [yin]
-    for xmag, ymag, xsign, ysign in itertools.product(xmags, ymags, [-1, +1], [-1, +1]):
-        subI1 = extract_overlap_subregion(image1, (xmag * xsign), (ymag * ysign))
-        subI2 = extract_overlap_subregion(image2, -(xmag * xsign), -(ymag * ysign))
+    assert 0 <= yin and yin < sizeY
+    assert 0 <= xin and xin < sizeX
+    ymags = [yin, sizeY - yin] if yin > 0 else [yin]
+    xmags = [xin, sizeX - xin] if xin > 0 else [xin]
+    for ymag, xmag, ysign, xsign in itertools.product(ymags, xmags, [-1, +1], [-1, +1]):
+        yval = ymag * ysign
+        xval = xmag * xsign
+        subI1 = extract_overlap_subregion(image1, yval, xval)
+        subI2 = extract_overlap_subregion(image2, -yval, -xval)
         ncc_val = ncc(subI1, subI2)
         if ncc_val > _ncc:
             _ncc = float(ncc_val)
-            x = int(xmag * xsign)
-            y = int(ymag * ysign)
-    return _ncc, x, y
+            y = int(yval)
+            x = int(xval)
+    return _ncc, y, x
