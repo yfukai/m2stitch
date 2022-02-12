@@ -89,18 +89,17 @@ def ncc(image1: NumArray, image2: NumArray) -> Float:
     return n / d
 
 
-def extract_overlap_subregion(image: NumArray, x: Int, y: Int) -> NumArray:
+def extract_overlap_subregion(image: NumArray, y: Int, x: Int) -> NumArray:
     """Extract the overlapping subregion of the image.
 
     Parameters
     ---------
     image : np.ndarray
         the image (the dimension must be 2)
-    x : Int
-        the x position
     y : Int
-        the y position
-
+        the y (second last dim.) position
+    x : Int
+        the x (last dim.) position
     Returns
     -------
     subimage : np.ndarray
@@ -108,11 +107,13 @@ def extract_overlap_subregion(image: NumArray, x: Int, y: Int) -> NumArray:
     """
     sizeY = image.shape[0]
     sizeX = image.shape[1]
-    assert (np.abs(x) < sizeY) and (np.abs(y) < sizeX)
-    xstart = int(max(0, min(x, sizeY, key=int), key=int))
-    xend = int(max(0, min(x + sizeY, sizeY, key=int), key=int))
-    ystart = int(max(0, min(y, sizeX, key=int), key=int))
-    yend = int(max(0, min(y + sizeX, sizeX, key=int), key=int))
+    assert (np.abs(y) < sizeY) and (np.abs(x) < sizeX)
+    # clip x to (0, size_Y)
+    xstart = int(max(0, min(y, sizeY, key=int), key=int))
+    # clip x+sizeY to (0, size_Y)
+    xend = int(max(0, min(y + sizeY, sizeY, key=int), key=int))
+    ystart = int(max(0, min(x, sizeX, key=int), key=int))
+    yend = int(max(0, min(x + sizeX, sizeX, key=int), key=int))
     return image[xstart:xend, ystart:yend]
 
 
