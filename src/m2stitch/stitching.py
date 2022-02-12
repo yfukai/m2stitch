@@ -138,12 +138,13 @@ def stitch_images(
             grid[f"{dimension}_pos_init_guess"] = position_initial_guess[:, j]
         for direction, dimension in itertools.product(["top", "left"], ["y", "x"]):
             for ind, g in grid.iterrows():
-                if g[direction] is not None:
-                    g2 = grid.loc[g[direction]]
-                    grid.loc[ind, f"{direction}_{dimension}_init_guess"] = (
-                        g[f"{dimension}_pos_init_guess"]
-                        - g2[f"{dimension}_pos_init_guess"]
-                    )
+                i1 = g[direction]
+                if pd.isna(i1):
+                    continue
+                g2 = grid.loc[i1]
+                grid.loc[ind, f"{direction}_{dimension}_init_guess"] = (
+                    g[f"{dimension}_pos_init_guess"] - g2[f"{dimension}_pos_init_guess"]
+                )
 
     ###### translationComputation ######
     for direction in ["top", "left"]:
@@ -155,8 +156,25 @@ def stitch_images(
             image2 = images[i2]
 
             PCM = pcm(image1, image2).real
+            if position_initial_guess is not None:
+
+                def get_lims(dimension, size):
+                    val = g[f"{direction}_{dimension}_init_guess"]
+                    r = size * overlap_diff_threshold / 100.0
+                    return (val - r, val + r)
+
+                lims = np.array(
+                    [
+                        get_lims(dimension, size)
+                        for dimension, size in zip("yx", [sizeY, sizeX])
+                    ]
+                )
+            else:
+                lims = np.array([[-sizeY, sizeY], [-sizeX, sizeX]])
             yins, xins, _ = multi_peak_max(PCM)
-            max_peak = interpret_translation(image1, image2, yins, xins)
+            max_peak = interpret_translation(
+                image1, image2, yins, xins, *lims[0], *lims[1]
+            )
             for j, key in enumerate(["ncc", "x", "y"]):
                 grid.loc[i2, f"{direction}_{key}_first"] = max_peak[j]
 

@@ -113,7 +113,15 @@ def extract_overlap_subregion(image: NumArray, y: Int, x: Int) -> NumArray:
 
 
 def interpret_translation(
-    image1: NumArray, image2: npt.NDArray, yins: IntArray, xins: IntArray, n: Int = 2
+    image1: NumArray,
+    image2: npt.NDArray,
+    yins: IntArray,
+    xins: IntArray,
+    ymin: Int,
+    ymax: Int,
+    xmin: Int,
+    xmax: Int,
+    n: Int = 2,
 ) -> Tuple[float, int, int]:
     """Interpret the translation to find the translation with heighest ncc.
 
@@ -123,10 +131,18 @@ def interpret_translation(
         the first image (the dimension must be 2)
     image2 : np.ndarray
         the second image (the dimension must be 2)
-    xins : IntArray
-        the x positions estimated by PCM
     yins : IntArray
         the y positions estimated by PCM
+    xins : IntArray
+        the x positions estimated by PCM
+    ymin : Int
+        the minimum value of y (second last dim.)
+    ymax : Int
+        the maximum value of y (second last dim.)
+    xmin : Int
+        the minimum value of x (last dim.)
+    xmax : Int
+        the maximum value of x (last dim.)
     n : Int
         the number of peaks to check, default is 2.
 
@@ -149,6 +165,7 @@ def interpret_translation(
     sizeX = image1.shape[1]
     checked_num = 0
     for yin, xin in zip(yins, xins):
+        ischecked = False
         assert 0 <= yin and yin < sizeY
         assert 0 <= xin and xin < sizeX
         ymags = [yin, sizeY - yin] if yin > 0 else [yin]
@@ -158,14 +175,17 @@ def interpret_translation(
         ):
             yval = ymag * ysign
             xval = xmag * xsign
-            subI1 = extract_overlap_subregion(image1, yval, xval)
-            subI2 = extract_overlap_subregion(image2, -yval, -xval)
-            ncc_val = ncc(subI1, subI2)
-            if ncc_val > _ncc:
-                _ncc = float(ncc_val)
-                y = int(yval)
-                x = int(xval)
-        checked_num += 1
+            if (ymin <= yval) and (yval <= ymax) and (xmin <= xval) and (xval <= xmax):
+                ischecked = True
+                subI1 = extract_overlap_subregion(image1, yval, xval)
+                subI2 = extract_overlap_subregion(image2, -yval, -xval)
+                ncc_val = ncc(subI1, subI2)
+                if ncc_val > _ncc:
+                    _ncc = float(ncc_val)
+                    y = int(yval)
+                    x = int(xval)
+        if ischecked:
+            checked_num += 1
         if checked_num >= n:
             break
     return _ncc, y, x
