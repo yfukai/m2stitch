@@ -37,7 +37,7 @@ def pcm(image1: NumArray, image2: NumArray) -> FloatArray:
 
 
 def multi_peak_max(
-    PCM: FloatArray, n: int = 2
+    PCM: FloatArray,
 ) -> Tuple[IntArray, IntArray, FloatArray]:
     """Find the first to n th largest peaks in PCM.
 
@@ -45,9 +45,6 @@ def multi_peak_max(
     ---------
     PCM : np.ndarray
         the peak correlation matrix
-    n : Int
-        the number of the peaks
-
 
     Returns
     -------
@@ -58,9 +55,9 @@ def multi_peak_max(
     vals : np.ndarray
         the values of the peaks
     """
-    row, col = np.unravel_index(np.argsort(PCM.ravel()), PCM.shape)
-    vals: FloatArray = PCM[row[-n:][::-1], col[-n:][::-1]]
-    return row[-n:][::-1], col[-n:][::-1], vals
+    ys, xs = np.unravel_index(np.argsort(PCM.ravel()), PCM.shape)
+    vals: FloatArray = PCM[ys[::-1], xs[::-1]]
+    return ys[::-1], xs[::-1], vals
 
 
 def ncc(image1: NumArray, image2: NumArray) -> Float:
@@ -89,7 +86,7 @@ def ncc(image1: NumArray, image2: NumArray) -> Float:
     return n / d
 
 
-def extract_overlap_subregion(image: NumArray, x: Int, y: Int) -> NumArray:
+def extract_overlap_subregion(image: NumArray, _y: Int, _x: Int) -> NumArray:
     """Extract the overlapping subregion of the image.
 
     Parameters
@@ -100,7 +97,6 @@ def extract_overlap_subregion(image: NumArray, x: Int, y: Int) -> NumArray:
         the x position
     y : Int
         the y position
-
     Returns
     -------
     subimage : np.ndarray
@@ -108,18 +104,29 @@ def extract_overlap_subregion(image: NumArray, x: Int, y: Int) -> NumArray:
     """
     sizeY = image.shape[0]
     sizeX = image.shape[1]
-    assert (np.abs(x) < sizeY) and (np.abs(y) < sizeX)
-    xstart = int(max(0, min(x, sizeY, key=int), key=int))
-    xend = int(max(0, min(x + sizeY, sizeY, key=int), key=int))
-    ystart = int(max(0, min(y, sizeX, key=int), key=int))
-    yend = int(max(0, min(y + sizeX, sizeX, key=int), key=int))
+    assert (np.abs(_y) < sizeY) and (np.abs(_x) < sizeX)
+    # clip x to (0, size_Y)
+    xstart = int(max(0, min(_y, sizeY, key=int), key=int))
+    # clip x+sizeY to (0, size_Y)
+    xend = int(max(0, min(_y + sizeY, sizeY, key=int), key=int))
+    ystart = int(max(0, min(_x, sizeX, key=int), key=int))
+    yend = int(max(0, min(_x + sizeX, sizeX, key=int), key=int))
     return image[xstart:xend, ystart:yend]
 
 
 def interpret_translation(
-    image1: NumArray, image2: npt.NDArray, xin: Int, yin: Int
+    image1: NumArray,
+    image2: npt.NDArray,
+    yins: IntArray,
+    xins: IntArray,
+    y_min: Int,
+    y_max: Int,
+    x_min: Int,
+    x_max: Int,
+    n: int = 2,
 ) -> Tuple[float, int, int]:
     """Interpret the translation to find the translation with heighest ncc.
+    The candidates are ... (xin, sizeX-xin) * (+1,-1)
 
     Parameters
     ---------
@@ -127,10 +134,20 @@ def interpret_translation(
         the first image (the dimension must be 2)
     image2 : np.ndarray
         the second image (the dimension must be 2)
-    xin : Int
-        the x position estimated by PCM
-    yin : Int
-        the y position estimated by PCM
+    yins : IntArray
+        the y positions estimated by PCM
+    xins : IntArray
+        the x positions estimated by PCM
+    y_min : Int
+        the minimum arrowed y (second last dim.) position of the peak
+    y_max : Int
+        the maximum arrowed y (second last dim.) position of the peak
+    x_min : Int
+        the minimum arrowed x (last dim.) position of the peak
+    x_max : Int
+        the maximum arrowed x (last dim.) position of the peak
+    n : Int
+        the number of the valid peaks to test
 
     Returns
     -------
@@ -145,20 +162,38 @@ def interpret_translation(
     assert image2.ndim == 2
     assert np.array_equal(image1.shape, image2.shape)
     _ncc = -np.infty
-    x = 0
-    y = 0
+    _y = 0
+    _x = 0
     sizeY = image1.shape[0]
     sizeX = image1.shape[1]
-    assert 0 <= xin and xin < sizeY
-    assert 0 <= yin and yin < sizeX
-    xmags = [xin, sizeY - xin] if xin > 0 else [xin]
-    ymags = [yin, sizeX - yin] if yin > 0 else [yin]
-    for xmag, ymag, xsign, ysign in itertools.product(xmags, ymags, [-1, +1], [-1, +1]):
-        subI1 = extract_overlap_subregion(image1, (xmag * xsign), (ymag * ysign))
-        subI2 = extract_overlap_subregion(image2, -(xmag * xsign), -(ymag * ysign))
-        ncc_val = ncc(subI1, subI2)
-        if ncc_val > _ncc:
-            _ncc = float(ncc_val)
-            x = int(xmag * xsign)
-            y = int(ymag * ysign)
-    return _ncc, x, y
+    peak_counts = 0
+
+    for yin, xin in zip(yins, xins):
+        peak_counted = False
+        assert 0 <= yin and yin < sizeY
+        assert 0 <= xin and xin < sizeX
+        ymags = [yin, sizeY - yin] if yin > 0 else [yin]
+        xmags = [xin, sizeX - xin] if xin > 0 else [xin]
+        for ymag, xmag, ysign, xsign in itertools.product(
+            ymags, xmags, [-1, +1], [-1, +1]
+        ):
+            yval = ymag * ysign
+            xval = xmag * xsign
+            if (y_min <= yval) & (yval <= y_max) & (x_min <= xval) & (xval <= x_max):
+                peak_counted = True
+                subI1 = extract_overlap_subregion(
+                    image1, (ymag * ysign), (xmag * xsign)
+                )
+                subI2 = extract_overlap_subregion(
+                    image2, -(ymag * ysign), -(xmag * xsign)
+                )
+                ncc_val = ncc(subI1, subI2)
+                if ncc_val > _ncc:
+                    _ncc = float(ncc_val)
+                    _y = int(ymag * ysign)
+                    _x = int(xmag * ysign)
+        if peak_counted:
+            peak_counts += 1
+            if peak_counts >= n:
+                break
+    return _ncc, _y, _x
