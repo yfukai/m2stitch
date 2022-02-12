@@ -27,23 +27,3 @@ def test_stitching(test_image_path: Tuple[npt.NDArray, pd.DataFrame]) -> None:
     assert np.array_equal(result_df.index, props.index)
     assert np.max(np.abs(result_df["x_pos"] - props["x_pos"])) < 2
     assert np.max(np.abs(result_df["y_pos"] - props["y_pos"])) < 2
-
-
-def test_stitching_initial_guess(
-    test_image_path: Tuple[npt.NDArray, pd.DataFrame]
-) -> None:
-    testimages, props = test_image_path
-    """It exits with a status code of zero."""
-    rows = props["row"].to_list()
-    cols = props["col"].to_list()
-    initial_guess = np.array(props[["y_pos", "x_pos"]].values)
-    result_df, _ = stitch_images(
-        testimages,
-        rows,
-        cols,
-        position_initial_guess=initial_guess,
-        row_col_transpose=False,
-    )
-    assert np.array_equal(result_df.index, props.index)
-    assert np.max(np.abs(result_df["x_pos"] - props["x_pos"])) < 2
-    assert np.max(np.abs(result_df["y_pos"] - props["y_pos"])) < 2

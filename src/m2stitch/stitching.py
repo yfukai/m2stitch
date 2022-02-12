@@ -138,13 +138,12 @@ def stitch_images(
             grid[f"{dimension}_pos_init_guess"] = position_initial_guess[:, j]
         for direction, dimension in itertools.product(["top", "left"], ["y", "x"]):
             for ind, g in grid.iterrows():
-                i1 = g[direction]
-                if pd.isna(i1):
-                    continue
-                g2 = grid.loc[i1]
-                grid.loc[ind, f"{direction}_{dimension}_init_guess"] = (
-                    g2[f"{dimension}_pos_init_guess"] - g[f"{dimension}_pos_init_guess"]
-                )
+                if g[direction] is not None:
+                    g2 = grid.loc[g[direction]]
+                    grid.loc[ind, f"{direction}_{dimension}_init_guess"] = (
+                        g[f"{dimension}_pos_init_guess"]
+                        - g2[f"{dimension}_pos_init_guess"]
+                    )
 
     ###### translationComputation ######
     for direction in ["top", "left"]:
@@ -156,31 +155,13 @@ def stitch_images(
             image2 = images[i2]
 
             PCM = pcm(image1, image2).real
-
-            if position_initial_guess is not None:
-                g2 = grid.loc[i1]
-
-                def get_lims(dimension, size):
-                    val = g[f"{direction}_{dimension}_init_guess"]
-                    r = size * overlap_diff_threshold / 100.0
-                    return (val - r, val + r)
-
-                lims = np.array(
-                    [
-                        get_lims(dimension, size)
-                        for dimension, size in zip("yx", [sizeY, sizeX])
-                    ]
-                )
-            else:
-                lims = np.array([[-sizeY, sizeY], [-sizeX, sizeX]])
             found_peaks = list(zip(*multi_peak_max(PCM)))
 
-            yins, xins, _ = zip(*found_peaks)
-            max_peak = interpret_translation(
-                image1, image2, yins, xins, *lims[0], *lims[1]
-            )
-            #            max_peak = interpreted_peaks[np.argmax(np.array(interpreted_peaks)[:, 0])]
-            for j, key in enumerate(["ncc", "y", "x"]):
+            interpreted_peaks = []
+            for r, c, _ in found_peaks:
+                interpreted_peaks.append(interpret_translation(image1, image2, r, c))
+            max_peak = interpreted_peaks[np.argmax(np.array(interpreted_peaks)[:, 0])]
+            for j, key in enumerate(["ncc", "x", "y"]):
                 grid.loc[i2, f"{direction}_{key}_first"] = max_peak[j]
 
     prob_uniform_n, mu_n, sigma_n = compute_image_overlap(
