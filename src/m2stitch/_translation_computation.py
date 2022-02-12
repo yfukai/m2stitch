@@ -36,18 +36,13 @@ def pcm(image1: NumArray, image2: NumArray) -> FloatArray:
     return np.fft.ifft2(FC / np.abs(FC)).real.astype(np.float32)
 
 
-def multi_peak_max(
-    PCM: FloatArray, n: int = 2
-) -> Tuple[IntArray, IntArray, FloatArray]:
+def multi_peak_max(PCM: FloatArray) -> Tuple[IntArray, IntArray, FloatArray]:
     """Find the first to n th largest peaks in PCM.
 
     Parameters
     ---------
     PCM : np.ndarray
         the peak correlation matrix
-    n : Int
-        the number of the peaks
-
 
     Returns
     -------
@@ -59,8 +54,8 @@ def multi_peak_max(
         the values of the peaks
     """
     row, col = np.unravel_index(np.argsort(PCM.ravel()), PCM.shape)
-    vals: FloatArray = PCM[row[-n:][::-1], col[-n:][::-1]]
-    return row[-n:][::-1], col[-n:][::-1], vals
+    vals: FloatArray = PCM[row[::-1], col[::-1]]
+    return row[::-1], col[::-1], vals
 
 
 def ncc(image1: NumArray, image2: NumArray) -> Float:
@@ -173,4 +168,4 @@ def interpret_translation(
         checked_num += 1
         if checked_num >= n:
             break
-        return _ncc, y, x
+    return _ncc, y, x
