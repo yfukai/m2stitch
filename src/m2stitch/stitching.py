@@ -35,7 +35,6 @@ def stitch_images(
     position_initial_guess: Optional[NumArray] = None,
     overlap_diff_threshold: Float = 10,
     pou: Float = 3,
-    overlap_prob_uniform_threshold: Float = 80,
     full_output: bool = False,
     row_col_transpose: bool = True,
 ) -> Tuple[pd.DataFrame, dict]:
@@ -66,11 +65,6 @@ def stitch_images(
 
     pou : Float, default 3
         the "percent overlap uncertainty" parameter
-
-    overlap_prob_uniform_threshold : Float, default 80
-        the upper threshold for "uniform probability".
-        raise this value to ease assumption
-        that the displacement is following non-uniform distribution.
 
     full_output : bool, default False
         if True, returns the full comptutation result in the pd.DataFrame
@@ -105,7 +99,6 @@ def stitch_images(
         position_initial_guess = np.array(position_initial_guess)
         assert images.shape[0] == position_indices.shape[0]
         assert position_initial_guess.shape[1] == images.ndim - 1
-    assert 0 <= overlap_prob_uniform_threshold and overlap_prob_uniform_threshold <= 100
     assert 0 <= overlap_diff_threshold and overlap_diff_threshold <= 100
     _cols, _rows = position_indices.T
 
@@ -181,7 +174,7 @@ def stitch_images(
                 grid.loc[i2, f"{direction}_{key}_first"] = max_peak[j]
 
     predictor = EllipticEnvelope(contamination=0.4)
-    # TODO make threshold adjustable:w
+    # TODO make threshold adjustable
     left_displacement = compute_image_overlap2(
         grid[grid["left_ncc_first"] > 0.5], "left", sizeY, sizeX, predictor
     )
