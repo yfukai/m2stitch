@@ -189,7 +189,7 @@ def interpret_translation(
     )
     assert np.any(valid_ind)
     valid_ind = np.any(valid_ind, axis=0)
-    for pos in np.moveaxis(poss[:, :, valid_ind], -1, 0)[:n]:
+    for pos in np.moveaxis(poss[:, :, valid_ind], -1, 0)[: int(n)]:
         for yval, xval in pos:
             if (ymin <= yval) and (yval <= ymax) and (xmin <= xval) and (xval <= xmax):
                 subI1 = extract_overlap_subregion(image1, yval, xval)
