@@ -181,6 +181,7 @@ def stitch_images(
                 grid.loc[i2, f"{direction}_{key}_first"] = max_peak[j]
 
     predictor = EllipticEnvelope(contamination=0.4)
+    # TODO make threshold adjustable:w
     left_displacement = compute_image_overlap2(
         grid[grid["left_ncc_first"] > 0.5], "left", sizeY, sizeX, predictor
     )
