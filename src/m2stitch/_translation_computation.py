@@ -173,14 +173,14 @@ def interpret_translation(
     xmagss[1][xmagss[0] == 0] = 0
 
     # concatenate all the candidates
-    poss = []
+    _poss = []
     for ymags, xmags, ysign, xsign in itertools.product(
         ymagss, xmagss, [-1, +1], [-1, +1]
     ):
         yvals = ymags * ysign
         xvals = xmags * xsign
-        poss.append([yvals, xvals])
-    poss = np.array(poss)
+        _poss.append([yvals, xvals])
+    poss = np.array(_poss)
     valid_ind = (
         (ymin <= poss[:, 0, :])
         & (poss[:, 0, :] <= ymax)
