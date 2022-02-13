@@ -115,11 +115,11 @@ def refine_translations(images: NumArray, grid: pd.DataFrame, r: Float) -> pd.Da
             values, ncc_value = find_local_max_integer_constrained(
                 overlap_ncc, np.array(init_values), np.array(limits)
             )
-            grid.loc[i2, f"{direction}_x"] = values[0]
-            grid.loc[i2, f"{direction}_y"] = values[1]
+            grid.loc[i2, f"{direction}_y"] = values[0]
+            grid.loc[i2, f"{direction}_x"] = values[1]
             grid.loc[i2, f"{direction}_ncc"] = ncc_value
     for direction in ["top", "left"]:
-        for xy in ["x", "y"]:
-            key = f"{direction}_{xy}"
+        for dim in "yx":
+            key = f"{direction}_{dim}"
             grid[key] = grid[key].astype(pd.Int32Dtype())
     return grid
