@@ -11,7 +11,7 @@ from ._typing_utils import Int
 
 def compute_image_overlap2(
     grid: pd.DataFrame, direction: str, sizeY: Int, sizeX: Int, predictor: BaseEstimator
-) -> Tuple[Float, Float]:
+) -> Tuple[Float, ...]:
     """Compute the value of the image overlap.
 
     Parameters
