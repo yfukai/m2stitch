@@ -175,7 +175,7 @@ def stitch_images(
             max_peak = interpret_translation(
                 image1, image2, yins, xins, *lims[0], *lims[1]
             )
-            for j, key in enumerate(["ncc", "x", "y"]):
+            for j, key in enumerate(["ncc", "y", "x"]):
                 grid.loc[i2, f"{direction}_{key}_first"] = max_peak[j]
 
     prob_uniform_n, mu_n, sigma_n = compute_image_overlap(

@@ -96,9 +96,9 @@ def compute_image_overlap(
         when direction is not in ["top","left"], raises ValueError
     """
     if direction == "top":
-        T = grid["top_y_first"].values / sizeX * 100
+        T = grid["top_x_first"].values / sizeX * 100
     elif direction == "left":
-        T = grid["left_x_first"].values / sizeY * 100
+        T = grid["left_y_first"].values / sizeY * 100
     else:
         raise ValueError("direction must be either of top or left")
     T = T[np.isfinite(T)]
@@ -217,27 +217,27 @@ def compute_repeatability(
         the repeatability of the stage motion
     """
     grid["top_valid1"] = filter_by_overlap_and_correlation(
-        grid["top_y_first"], grid["top_ncc_first"], overlap_n, sizeX, pou
+        grid["top_x_first"], grid["top_ncc_first"], overlap_n, sizeX, pou
     )
     grid["left_valid1"] = filter_by_overlap_and_correlation(
-        grid["left_x_first"], grid["left_ncc_first"], overlap_w, sizeY, pou
+        grid["left_y_first"], grid["left_ncc_first"], overlap_w, sizeY, pou
     )
-    grid["top_valid2"] = filter_outliers(grid["top_y_first"], grid["top_valid1"])
-    grid["left_valid2"] = filter_outliers(grid["left_x_first"], grid["left_valid1"])
+    grid["top_valid2"] = filter_outliers(grid["top_x_first"], grid["top_valid1"])
+    grid["left_valid2"] = filter_outliers(grid["left_y_first"], grid["left_valid1"])
 
     if np.any(grid["top_valid2"]):
-        xs = grid[grid["top_valid2"]]["top_x_first"]
+        xs = grid[grid["top_valid2"]]["top_y_first"]
         rx_top = np.ceil((xs.max() - xs.min()) / 2)
-        _, yss = zip(*grid[grid["top_valid2"]].groupby("row")["top_y_first"])
+        _, yss = zip(*grid[grid["top_valid2"]].groupby("row")["top_x_first"])
         ry_top = np.ceil(np.max([np.max(ys) - np.min(ys) for ys in yss]) / 2)
         r_top = max(rx_top, ry_top)
     else:
         r_top = 0  # better than failing
 
     if np.any(grid["left_valid2"]):
-        ys = grid[grid["left_valid2"]]["left_y_first"]
+        ys = grid[grid["left_valid2"]]["left_x_first"]
         ry_left = np.ceil((ys.max() - ys.min()) / 2)
-        _, xss = zip(*grid[grid["left_valid2"]].groupby("col")["left_x_first"])
+        _, xss = zip(*grid[grid["left_valid2"]].groupby("col")["left_y_first"])
         rx_left = np.ceil(np.max([np.max(xs) - np.min(xs) for xs in xss]) / 2)
         r_left = max(ry_left, rx_left)
     else:
@@ -266,11 +266,11 @@ def filter_by_repeatability(grid: pd.DataFrame, r: Float) -> pd.DataFrame:
         if not any(isvalid):
             grid.loc[grp.index, "top_valid3"] = False
         else:
-            medx = grp[isvalid]["top_x_first"].median()
-            medy = grp[isvalid]["top_y_first"].median()
+            medx = grp[isvalid]["top_y_first"].median()
+            medy = grp[isvalid]["top_x_first"].median()
             grid.loc[grp.index, "top_valid3"] = (
-                grp["top_x_first"].between(medx - r, medx + r)
-                & grp["top_y_first"].between(medy - r, medy + r)
+                grp["top_y_first"].between(medx - r, medx + r)
+                & grp["top_x_first"].between(medy - r, medy + r)
                 & (grp["top_ncc_first"] > 0.5)
             )
     for _, grp in grid.groupby("row"):
@@ -278,11 +278,11 @@ def filter_by_repeatability(grid: pd.DataFrame, r: Float) -> pd.DataFrame:
         if not any(isvalid):
             grid.loc[grp.index, "left_valid3"] = False
         else:
-            medx = grp[isvalid]["left_x_first"].median()
-            medy = grp[isvalid]["left_y_first"].median()
+            medx = grp[isvalid]["left_y_first"].median()
+            medy = grp[isvalid]["left_x_first"].median()
             grid.loc[grp.index, "left_valid3"] = (
-                grp["left_x_first"].between(medx - r, medx + r)
-                & grp["left_y_first"].between(medy - r, medy + r)
+                grp["left_y_first"].between(medx - r, medx + r)
+                & grp["left_x_first"].between(medy - r, medy + r)
                 & (grp["left_ncc_first"] > 0.5)
             )
     return grid
@@ -319,10 +319,10 @@ def replace_invalid_translations(grid: pd.DataFrame) -> pd.DataFrame:
                     pd.isna(grid.loc[grp.index[~isvalid], f"{direction}_y_second"])
                 )
                 grid.loc[grp.index[~isvalid], f"{direction}_x_second"] = grp[isvalid][
-                    f"{direction}_x_first"
+                    f"{direction}_y_first"
                 ].median()
                 grid.loc[grp.index[~isvalid], f"{direction}_y_second"] = grp[isvalid][
-                    f"{direction}_y_first"
+                    f"{direction}_x_first"
                 ].median()
                 grid.loc[grp.index[~isvalid], f"{direction}_ncc_second"] = -1
     for direction, xy in itertools.product(["top", "left"], ["x", "y"]):
