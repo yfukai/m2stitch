@@ -74,16 +74,16 @@ def refine_translations(images: NumArray, grid: pd.DataFrame, r: Float) -> pd.Da
     images : NumArray
         the tile images
     grid : pd.DataFrame
-        the dataframe for the grid position, with columns "{top|left}_{x|y}_second"
+        the dataframe for the grid position, with columns "{left|top}_{x|y}_second"
     r : Float
         the repeatability
 
     Returns
     -------
     grid : pd.DataFrame
-        the refined grid position, with columns "{top|left}_{x|y|ncc}"
+        the refined grid position, with columns "{left|top}_{x|y|ncc}"
     """
-    for direction in ["top", "left"]:
+    for direction in ["left", "top"]:
         for i2, g in tqdm(grid.iterrows(), total=len(grid)):
             i1 = g[direction]
             if pd.isna(i1):
@@ -118,7 +118,7 @@ def refine_translations(images: NumArray, grid: pd.DataFrame, r: Float) -> pd.Da
             grid.loc[i2, f"{direction}_y"] = values[0]
             grid.loc[i2, f"{direction}_x"] = values[1]
             grid.loc[i2, f"{direction}_ncc"] = ncc_value
-    for direction in ["top", "left"]:
+    for direction in ["left", "top"]:
         for dim in "yx":
             key = f"{direction}_{dim}"
             grid[key] = grid[key].astype(pd.Int32Dtype())

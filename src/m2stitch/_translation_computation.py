@@ -164,8 +164,8 @@ def interpret_translation(
     assert np.all(0 <= xins) and np.all(xins < sizeX)
 
     _ncc = -np.infty
-    x = 0
     y = 0
+    x = 0
 
     ymagss = [yins, sizeY - yins]
     ymagss[1][ymagss[0] == 0] = 0

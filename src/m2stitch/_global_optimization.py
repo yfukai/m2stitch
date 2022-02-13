@@ -12,7 +12,7 @@ def compute_maximum_spanning_tree(grid: pd.DataFrame) -> nx.Graph:
     ----------
     grid : pd.DataFrame
         the dataframe for the grid position,
-        with columns "{top|left}_{x|y|ncc|valid3}"
+        with columns "{left|top}_{x|y|ncc|valid3}"
 
     Returns
     -------
@@ -21,7 +21,7 @@ def compute_maximum_spanning_tree(grid: pd.DataFrame) -> nx.Graph:
     """
     connection_graph = nx.Graph()
     for i, g in grid.iterrows():
-        for direction in ["top", "left"]:
+        for direction in ["left", "top"]:
             if not pd.isna(g[direction]):
                 weight = g[f"{direction}_ncc"]
                 if g[f"{direction}_valid3"]:
