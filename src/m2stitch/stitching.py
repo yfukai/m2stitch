@@ -220,6 +220,8 @@ def stitch_images(
         },
         "repeatability": r,
     }
+    if row_col_transpose:
+        grid = grid.rename(columns={"x_pos": "y_pos", "y_pos": "x_pos"})
     if full_output:
         return grid, prop_dict
     else:
