@@ -25,8 +25,8 @@ def test_stitching(test_image_path: Tuple[npt.NDArray, pd.DataFrame]) -> None:
     rows = props["row"].to_list()
     result_df, _ = stitch_images(testimages, rows, cols, row_col_transpose=False)
     assert np.array_equal(result_df.index, props.index)
-    assert np.max(np.abs(result_df["y_pos"] - props["y_pos"])) <= 3
-    assert np.max(np.abs(result_df["x_pos"] - props["x_pos"])) <= 3
+    assert np.max(np.abs(result_df["y_pos"] - props["y_pos"])) < 2
+    assert np.max(np.abs(result_df["x_pos"] - props["x_pos"])) < 2
 
 
 def test_stitching_init_guess(
@@ -46,5 +46,5 @@ def test_stitching_init_guess(
         position_initial_guess=pos_guess,
     )
     assert np.array_equal(result_df.index, props.index)
-    assert np.max(np.abs(result_df["y_pos"] - props["y_pos"])) <= 4
-    assert np.max(np.abs(result_df["x_pos"] - props["x_pos"])) <= 4
+    assert np.max(np.abs(result_df["y_pos"] - props["y_pos"])) < 2
+    assert np.max(np.abs(result_df["x_pos"] - props["x_pos"])) < 2
