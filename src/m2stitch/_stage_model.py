@@ -1,16 +1,16 @@
 import itertools
-from typing import Callable
 from typing import Tuple
 
 import numpy as np
 import pandas as pd
+from sklearn.base import BaseEstimator
 
 from ._typing_utils import Float
 from ._typing_utils import Int
 
 
 def compute_image_overlap2(
-    grid: pd.DataFrame, direction: str, sizeY: Int, sizeX: Int, predictor: Callable
+    grid: pd.DataFrame, direction: str, sizeY: Int, sizeX: Int, predictor: BaseEstimator
 ) -> Tuple[Float, Float]:
     """Compute the value of the image overlap.
 
