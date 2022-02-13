@@ -313,15 +313,15 @@ def replace_invalid_translations(grid: pd.DataFrame) -> pd.DataFrame:
             isvalid = grp[f"{direction}_valid3"].astype(bool)
             if any(isvalid):
                 assert all(
-                    pd.isna(grid.loc[grp.index[~isvalid], f"{direction}_x_second"])
-                )
-                assert all(
                     pd.isna(grid.loc[grp.index[~isvalid], f"{direction}_y_second"])
                 )
-                grid.loc[grp.index[~isvalid], f"{direction}_x_second"] = grp[isvalid][
+                assert all(
+                    pd.isna(grid.loc[grp.index[~isvalid], f"{direction}_x_second"])
+                )
+                grid.loc[grp.index[~isvalid], f"{direction}_y_second"] = grp[isvalid][
                     f"{direction}_y_first"
                 ].median()
-                grid.loc[grp.index[~isvalid], f"{direction}_y_second"] = grp[isvalid][
+                grid.loc[grp.index[~isvalid], f"{direction}_x_second"] = grp[isvalid][
                     f"{direction}_x_first"
                 ].median()
                 grid.loc[grp.index[~isvalid], f"{direction}_ncc_second"] = -1

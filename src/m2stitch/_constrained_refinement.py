@@ -99,8 +99,8 @@ def refine_translations(images: NumArray, grid: pd.DataFrame, r: Float) -> pd.Da
                 return ncc(subI1, subI2)
 
             init_values = [
-                int(g[f"{direction}_x_second"]),
                 int(g[f"{direction}_y_second"]),
+                int(g[f"{direction}_x_second"]),
             ]
             limits = [
                 [
