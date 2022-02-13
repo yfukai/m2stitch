@@ -9,6 +9,7 @@ from typing import Union
 
 import numpy as np
 import pandas as pd
+from sklearn.covariance import EllipticEnvelope
 from tqdm import tqdm
 
 from ._constrained_refinement import refine_translations
@@ -179,11 +180,12 @@ def stitch_images(
             for j, key in enumerate(["ncc", "y", "x"]):
                 grid.loc[i2, f"{direction}_{key}_first"] = max_peak[j]
 
+    predictor = EllipticEnvelope(contamination=0.4)
     left_displacement = compute_image_overlap2(
-        grid[grid["left_ncc_first"] > 0.5], "left", sizeY, sizeX
+        grid[grid["left_ncc_first"] > 0.5], "left", sizeY, sizeX, predictor
     )
     top_displacement = compute_image_overlap2(
-        grid[grid["top_ncc_first"] > 0.5], "top", sizeY, sizeX
+        grid[grid["top_ncc_first"] > 0.5], "top", sizeY, sizeX, predictor
     )
     overlap_top = np.clip(100 - top_displacement[0] * 100, pou, 100 - pou)
     overlap_left = np.clip(100 - left_displacement[1] * 100, pou, 100 - pou)

@@ -1,19 +1,16 @@
 import itertools
+from typing import Callable
 from typing import Tuple
 
 import numpy as np
 import pandas as pd
-from sklearn.ensemble import IsolationForest
 
 from ._typing_utils import Float
 from ._typing_utils import Int
 
 
 def compute_image_overlap2(
-    grid: pd.DataFrame,
-    direction: str,
-    sizeY: Int,
-    sizeX: Int,
+    grid: pd.DataFrame, direction: str, sizeY: Int, sizeX: Int, predictor: Callable
 ) -> Tuple[Float, Float]:
     """Compute the value of the image overlap.
 
@@ -45,8 +42,7 @@ def compute_image_overlap2(
         ]
     )
     translation = translation[:, np.all(np.isfinite(translation), axis=0)]
-    ifol = IsolationForest()
-    c = ifol.fit_predict(translation.T)
+    c = predictor.fit_predict(translation.T)
     return tuple(np.median(translation[:, c], axis=1))
 
 
