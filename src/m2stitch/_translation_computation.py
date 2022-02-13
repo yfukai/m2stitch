@@ -158,25 +158,40 @@ def interpret_translation(
     assert image1.ndim == 2
     assert image2.ndim == 2
     assert np.array_equal(image1.shape, image2.shape)
+    sizeY = image1.shape[0]
+    sizeX = image1.shape[1]
+    assert np.all(0 <= yins) and np.all(yins < sizeY)
+    assert np.all(0 <= xins) and np.all(xins < sizeX)
+
     _ncc = -np.infty
     x = 0
     y = 0
-    sizeY = image1.shape[0]
-    sizeX = image1.shape[1]
-    checked_num = 0
-    for yin, xin in zip(yins, xins):
-        ischecked = False
-        assert 0 <= yin and yin < sizeY
-        assert 0 <= xin and xin < sizeX
-        ymags = [yin, sizeY - yin] if yin > 0 else [yin]
-        xmags = [xin, sizeX - xin] if xin > 0 else [xin]
-        for ymag, xmag, ysign, xsign in itertools.product(
-            ymags, xmags, [-1, +1], [-1, +1]
-        ):
-            yval = ymag * ysign
-            xval = xmag * xsign
+
+    ymagss = [yins, sizeY - yins]
+    ymagss[1][ymagss[0] == 0] = 0
+    xmagss = [xins, sizeX - xins]
+    xmagss[1][xmagss[0] == 0] = 0
+
+    # concatenate all the candidates
+    poss = []
+    for ymags, xmags, ysign, xsign in itertools.product(
+        ymagss, xmagss, [-1, +1], [-1, +1]
+    ):
+        yvals = ymags * ysign
+        xvals = xmags * xsign
+        poss.append([yvals, xvals])
+    poss = np.array(poss)
+    valid_ind = (
+        (ymin <= poss[:, 0, :])
+        & (poss[:, 0, :] <= ymax)
+        & (xmin <= poss[:, 1, :])
+        & (poss[:, 1, :] <= xmax)
+    )
+    assert np.any(valid_ind)
+    valid_ind = np.any(valid_ind, axis=0)
+    for pos in np.moveaxis(poss[:, :, valid_ind], -1, 0)[:n]:
+        for yval, xval in pos:
             if (ymin <= yval) and (yval <= ymax) and (xmin <= xval) and (xval <= xmax):
-                ischecked = True
                 subI1 = extract_overlap_subregion(image1, yval, xval)
                 subI2 = extract_overlap_subregion(image2, -yval, -xval)
                 ncc_val = ncc(subI1, subI2)
@@ -184,8 +199,4 @@ def interpret_translation(
                     _ncc = float(ncc_val)
                     y = int(yval)
                     x = int(xval)
-        if ischecked:
-            checked_num += 1
-        if checked_num >= n:
-            break
     return _ncc, y, x
