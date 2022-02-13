@@ -161,7 +161,7 @@ def stitch_images(
                 def get_lims(dimension, size):
                     val = g[f"{direction}_{dimension}_init_guess"]
                     r = size * overlap_diff_threshold / 100.0
-                    return (val - r, val + r)
+                    return np.round([val - r, val + r]).astype(np.int64)
 
                 lims = np.array(
                     [
@@ -178,6 +178,8 @@ def stitch_images(
             for j, key in enumerate(["ncc", "y", "x"]):
                 grid.loc[i2, f"{direction}_{key}_first"] = max_peak[j]
 
+    #    top_displacement=
+    #    left_displacement=
     prob_uniform_n, mu_n, sigma_n = compute_image_overlap(
         grid, "top", sizeY, sizeX, prob_uniform_threshold=overlap_prob_uniform_threshold
     )
