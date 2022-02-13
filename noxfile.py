@@ -101,7 +101,10 @@ def safety(session: Session) -> None:
     """Scan dependencies for insecure packages."""
     requirements = session.poetry.export_requirements()
     session.install("safety")
-    session.run("safety", "check", "--full-report", f"--file={requirements}")
+    session.run(
+        "safety", "check", "--full-report", f"--file={requirements}", "--ignore=44715"
+    )
+    # ignore numpy update for a while as resolved in 1.22 (2022.2.13)
 
 
 @session(python=python_versions)

@@ -1,4 +1,5 @@
 """This module provides microscope image stitching with the algorithm by MIST."""
+import itertools
 import warnings
 from typing import Any
 from typing import Optional
@@ -8,14 +9,16 @@ from typing import Union
 
 import numpy as np
 import pandas as pd
+from sklearn.covariance import EllipticEnvelope
 from tqdm import tqdm
 
 from ._constrained_refinement import refine_translations
 from ._global_optimization import compute_final_position
 from ._global_optimization import compute_maximum_spanning_tree
-from ._stage_model import compute_image_overlap
-from ._stage_model import compute_repeatability
+from ._stage_model import compute_image_overlap2
+from ._stage_model import filter_by_overlap_and_correlation
 from ._stage_model import filter_by_repeatability
+from ._stage_model import filter_outliers
 from ._stage_model import replace_invalid_translations
 from ._translation_computation import interpret_translation
 from ._translation_computation import multi_peak_max
@@ -29,6 +32,8 @@ def stitch_images(
     rows: Optional[Sequence[Any]] = None,
     cols: Optional[Sequence[Any]] = None,
     position_indices: Optional[NumArray] = None,
+    position_initial_guess: Optional[NumArray] = None,
+    overlap_diff_threshold: Float = 10,
     pou: Float = 3,
     overlap_prob_uniform_threshold: Float = 80,
     full_output: bool = False,
@@ -51,6 +56,13 @@ def stitch_images(
         the tile position indices in each dimension.
         the dimensions corresponds to (image, index)
         ignored if rows and cols are not None.
+
+    position_initial_guess : np.ndarray, optional
+        the initial guess for the positions of the images, in the unit of pixels.
+
+    overlap_diff_threshold : 10
+        the allowed difference from the initial guess, in percentage of the image size.
+        ignored if position_initial_guess is None
 
     pou : Float, default 3
         the "percent overlap uncertainty" parameter
@@ -89,21 +101,26 @@ def stitch_images(
     position_indices = np.array(position_indices)
     assert images.shape[0] == position_indices.shape[0]
     assert position_indices.shape[1] == images.ndim - 1
+    if position_initial_guess is not None:
+        position_initial_guess = np.array(position_initial_guess)
+        assert images.shape[0] == position_indices.shape[0]
+        assert position_initial_guess.shape[1] == images.ndim - 1
     assert 0 <= overlap_prob_uniform_threshold and overlap_prob_uniform_threshold <= 100
-    _rows, _cols = position_indices.T
+    assert 0 <= overlap_diff_threshold and overlap_diff_threshold <= 100
+    _cols, _rows = position_indices.T
 
-    W, H = images.shape[1:]
+    sizeY, sizeX = images.shape[1:]
 
     grid = pd.DataFrame(
         {
-            "row": _rows,
             "col": _cols,
+            "row": _rows,
         },
-        index=np.arange(len(_rows)),
+        index=np.arange(len(_cols)),
     )
 
-    def get_index(row, col):
-        df = grid[(grid["row"] == row) & (grid["col"] == col)]
+    def get_index(col, row):
+        df = grid[(grid["col"] == col) & (grid["row"] == row)]
         assert len(df) < 2
         if len(df) == 1:
             return df.index[0]
@@ -111,14 +128,28 @@ def stitch_images(
             return None
 
     grid["top"] = grid.apply(
-        lambda g: get_index(g["row"] - 1, g["col"]), axis=1
+        lambda g: get_index(g["col"], g["row"] - 1), axis=1
     ).astype(pd.Int32Dtype())
     grid["left"] = grid.apply(
-        lambda g: get_index(g["row"], g["col"] - 1), axis=1
+        lambda g: get_index(g["col"] - 1, g["row"]), axis=1
     ).astype(pd.Int32Dtype())
 
+    ### dimension order ... m.y.x
+    if position_initial_guess is not None:
+        for j, dimension in enumerate(["y", "x"]):
+            grid[f"{dimension}_pos_init_guess"] = position_initial_guess[:, j]
+        for direction, dimension in itertools.product(["left", "top"], ["y", "x"]):
+            for ind, g in grid.iterrows():
+                i1 = g[direction]
+                if pd.isna(i1):
+                    continue
+                g2 = grid.loc[i1]
+                grid.loc[ind, f"{direction}_{dimension}_init_guess"] = (
+                    g[f"{dimension}_pos_init_guess"] - g2[f"{dimension}_pos_init_guess"]
+                )
+
     ###### translationComputation ######
-    for direction in ["top", "left"]:
+    for direction in ["left", "top"]:
         for i2, g in tqdm(grid.iterrows(), total=len(grid)):
             i1 = g[direction]
             if pd.isna(i1):
@@ -127,28 +158,62 @@ def stitch_images(
             image2 = images[i2]
 
             PCM = pcm(image1, image2).real
-            found_peaks = list(zip(*multi_peak_max(PCM)))
+            if position_initial_guess is not None:
 
-            interpreted_peaks = []
-            for r, c, _ in found_peaks:
-                interpreted_peaks.append(interpret_translation(image1, image2, r, c))
-            max_peak = interpreted_peaks[np.argmax(np.array(interpreted_peaks)[:, 0])]
-            for j, key in enumerate(["ncc", "x", "y"]):
+                def get_lims(dimension, size):
+                    val = g[f"{direction}_{dimension}_init_guess"]
+                    r = size * overlap_diff_threshold / 100.0
+                    return np.round([val - r, val + r]).astype(np.int64)
+
+                lims = np.array(
+                    [
+                        get_lims(dimension, size)
+                        for dimension, size in zip("yx", [sizeY, sizeX])
+                    ]
+                )
+            else:
+                lims = np.array([[-sizeY, sizeY], [-sizeX, sizeX]])
+            yins, xins, _ = multi_peak_max(PCM)
+            max_peak = interpret_translation(
+                image1, image2, yins, xins, *lims[0], *lims[1]
+            )
+            for j, key in enumerate(["ncc", "y", "x"]):
                 grid.loc[i2, f"{direction}_{key}_first"] = max_peak[j]
 
-    prob_uniform_n, mu_n, sigma_n = compute_image_overlap(
-        grid, "top", W, H, prob_uniform_threshold=overlap_prob_uniform_threshold
+    predictor = EllipticEnvelope(contamination=0.4)
+    # TODO make threshold adjustable:w
+    left_displacement = compute_image_overlap2(
+        grid[grid["left_ncc_first"] > 0.5], "left", sizeY, sizeX, predictor
     )
-    overlap_n = 100 - mu_n
-    prob_uniform_w, mu_w, sigma_w = compute_image_overlap(
-        grid, "left", W, H, prob_uniform_threshold=overlap_prob_uniform_threshold
+    top_displacement = compute_image_overlap2(
+        grid[grid["top_ncc_first"] > 0.5], "top", sizeY, sizeX, predictor
     )
-    overlap_w = 100 - mu_w
+    overlap_top = np.clip(100 - top_displacement[0] * 100, pou, 100 - pou)
+    overlap_left = np.clip(100 - left_displacement[1] * 100, pou, 100 - pou)
 
-    overlap_n = np.clip(overlap_n, pou, 100 - pou)
-    overlap_w = np.clip(overlap_w, pou, 100 - pou)
+    ### compute_repeatability ###
+    grid["top_valid1"] = filter_by_overlap_and_correlation(
+        grid["top_y_first"], grid["top_ncc_first"], overlap_top, sizeY, pou
+    )
+    grid["top_valid2"] = filter_outliers(grid["top_y_first"], grid["top_valid1"])
+    grid["left_valid1"] = filter_by_overlap_and_correlation(
+        grid["left_x_first"], grid["left_ncc_first"], overlap_left, sizeX, pou
+    )
+    grid["left_valid2"] = filter_outliers(grid["left_x_first"], grid["left_valid1"])
 
-    grid, r = compute_repeatability(grid, overlap_n, overlap_w, W, H, pou)
+    rs = []
+    for direction, dims, rowcol in zip(["top", "left"], ["yx", "xy"], ["col", "row"]):
+        valid_key = f"{direction}_valid2"
+        valid_grid = grid[grid[valid_key]]
+        if len(valid_grid) > 0:
+            w1s = valid_grid[f"{direction}_{dims[0]}_first"]
+            r1 = np.ceil((w1s.max() - w1s.min()) / 2)
+            _, w2s = zip(*valid_grid.groupby(rowcol)[f"{direction}_{dims[1]}_first"])
+            r2 = np.ceil(np.max([np.max(w2) - np.min(w2) for w2 in w2s]) / 2)
+            rs.append(max(r1, r2))
+        rs.append(0)
+    r = np.max(rs)
+
     grid = filter_by_repeatability(grid, r)
     grid = replace_invalid_translations(grid)
 
@@ -158,23 +223,15 @@ def stitch_images(
     grid = compute_final_position(grid, tree)
 
     prop_dict = {
-        "W": W,
-        "H": H,
-        "overlap_top": overlap_n,
-        "overlap_left": overlap_w,
-        "overlap_top_results": {
-            "prob_uniform": prob_uniform_n,
-            "mu": mu_n,
-            "sigma": sigma_n,
-        },
-        "overlap_left_results": {
-            "prob_uniform": prob_uniform_w,
-            "mu": mu_w,
-            "sigma": sigma_w,
-        },
+        "W": sizeY,
+        "H": sizeX,
+        "overlap_left": overlap_left,
+        "overlap_top": overlap_top,
         "repeatability": r,
     }
+    if row_col_transpose:
+        grid = grid.rename(columns={"x_pos": "y_pos", "y_pos": "x_pos"})
     if full_output:
         return grid, prop_dict
     else:
-        return grid[["col", "row", "y_pos", "x_pos"]], prop_dict
+        return grid[["row", "col", "y_pos", "x_pos"]], prop_dict

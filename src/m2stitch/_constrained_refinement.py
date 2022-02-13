@@ -74,23 +74,23 @@ def refine_translations(images: NumArray, grid: pd.DataFrame, r: Float) -> pd.Da
     images : NumArray
         the tile images
     grid : pd.DataFrame
-        the dataframe for the grid position, with columns "{top|left}_{x|y}_second"
+        the dataframe for the grid position, with columns "{left|top}_{x|y}_second"
     r : Float
         the repeatability
 
     Returns
     -------
     grid : pd.DataFrame
-        the refined grid position, with columns "{top|left}_{x|y|ncc}"
+        the refined grid position, with columns "{left|top}_{x|y|ncc}"
     """
-    for direction in ["top", "left"]:
+    for direction in ["left", "top"]:
         for i2, g in tqdm(grid.iterrows(), total=len(grid)):
             i1 = g[direction]
             if pd.isna(i1):
                 continue
             image1 = images[i1]
             image2 = images[i2]
-            W, H = image1.shape
+            sizeY, sizeX = image1.shape
 
             def overlap_ncc(params):
                 x, y = params
@@ -99,21 +99,27 @@ def refine_translations(images: NumArray, grid: pd.DataFrame, r: Float) -> pd.Da
                 return ncc(subI1, subI2)
 
             init_values = [
-                int(g[f"{direction}_x_second"]),
                 int(g[f"{direction}_y_second"]),
+                int(g[f"{direction}_x_second"]),
             ]
             limits = [
-                [max(-W + 1, init_values[0] - r), min(W - 1, init_values[0] + r)],
-                [max(-H + 1, init_values[1] - r), min(H - 1, init_values[1] + r)],
+                [
+                    max(-sizeY + 1, init_values[0] - r),
+                    min(sizeY - 1, init_values[0] + r),
+                ],
+                [
+                    max(-sizeX + 1, init_values[1] - r),
+                    min(sizeX - 1, init_values[1] + r),
+                ],
             ]
             values, ncc_value = find_local_max_integer_constrained(
                 overlap_ncc, np.array(init_values), np.array(limits)
             )
-            grid.loc[i2, f"{direction}_x"] = values[0]
-            grid.loc[i2, f"{direction}_y"] = values[1]
+            grid.loc[i2, f"{direction}_y"] = values[0]
+            grid.loc[i2, f"{direction}_x"] = values[1]
             grid.loc[i2, f"{direction}_ncc"] = ncc_value
-    for direction in ["top", "left"]:
-        for xy in ["x", "y"]:
-            key = f"{direction}_{xy}"
+    for direction in ["left", "top"]:
+        for dim in "yx":
+            key = f"{direction}_{dim}"
             grid[key] = grid[key].astype(pd.Int32Dtype())
     return grid
