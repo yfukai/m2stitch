@@ -5,7 +5,7 @@ Example usage: reading images and stitching.
 
 .. literalinclude:: ../examples/stitching_example.py
    :language: python
-   :emphasize-lines: 25
+   :emphasize-lines: 28
 
 ..
    .. click:: m2stitch.__main__:main
