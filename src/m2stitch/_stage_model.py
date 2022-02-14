@@ -43,7 +43,7 @@ def compute_image_overlap2(
     )
     translation = translation[:, np.all(np.isfinite(translation), axis=0)]
     c = predictor.fit_predict(translation.T)
-    res = np.median(translation[:, c], axis=1)
+    res = np.median(translation[:, c == 1], axis=1)
     assert len(res) == 2
     return tuple(res)
 
