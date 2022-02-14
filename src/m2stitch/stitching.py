@@ -46,10 +46,10 @@ def stitch_images(
         the images to stitch.
 
     rows : list, optional
-        the row indices (tile position in the last dimension) of the images.
+        the row indices (tile position in the second last dimension) of the images.
 
     cols : list, optional
-        the column indices (tile position in the second last dimension) of the images
+        the column indices (tile position in the last dimension) of the images
 
     position_indices : np.ndarray, optional
         the tile position indices in each dimension.
@@ -89,9 +89,9 @@ def stitch_images(
             warnings.warn(
                 "row_col_transpose is True. The default value will be changed to False in the major release."
             )
-            position_indices = np.array([rows, cols]).T
-        else:
             position_indices = np.array([cols, rows]).T
+        else:
+            position_indices = np.array([rows, cols]).T
     position_indices = np.array(position_indices)
     assert images.shape[0] == position_indices.shape[0]
     assert position_indices.shape[1] == images.ndim - 1
@@ -100,7 +100,7 @@ def stitch_images(
         assert images.shape[0] == position_indices.shape[0]
         assert position_initial_guess.shape[1] == images.ndim - 1
     assert 0 <= overlap_diff_threshold and overlap_diff_threshold <= 100
-    _cols, _rows = position_indices.T
+    _rows, _cols = position_indices.T
 
     sizeY, sizeX = images.shape[1:]
 
@@ -175,6 +175,8 @@ def stitch_images(
 
     predictor = EllipticEnvelope(contamination=0.4)
     # TODO make threshold adjustable
+    assert np.any(grid["top_ncc_first"] > 0.5), "there is no good top pair"
+    assert np.any(grid["left_ncc_first"] > 0.5), "there is no good left pair"
     left_displacement = compute_image_overlap2(
         grid[grid["left_ncc_first"] > 0.5], "left", sizeY, sizeX, predictor
     )
