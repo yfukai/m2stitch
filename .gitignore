@@ -11,4 +11,4 @@ tests/data/testimages_lowncc.npy
 tests/data/testimages_lowncc2.npy
 tests/data/testimages_lowncc2.csv
 examples/stitched_image.npy
-tests/data/test3/
+tests/data/sparse_example/
