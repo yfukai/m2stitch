@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "m2stitch"
-version = "0.5.0"
+version = "0.5.1"
 description = "M2Stitch"
 authors = ["Yohsuke Fukai <ysk@yfukai.net>"]
 license = "MIT"
