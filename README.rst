@@ -45,7 +45,7 @@ with a comparable performance to that of MIST and additional features.
 Features
 --------
 
-- Provides robust stitching of tiled microscope images on a regular grid, mostly following algorithm by MIST_.
+- Provides robust stitching of tiled microscope images on a regular grid, mostly following algorithm by MIST_ but improved in several points.
 - Supports missing tiles.
 
 Installation
