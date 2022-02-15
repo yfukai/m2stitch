@@ -1,6 +1,7 @@
 """This module provides microscope image stitching with the algorithm by MIST."""
 import itertools
 import warnings
+from dataclasses import dataclass
 from typing import Any
 from typing import Optional
 from typing import Sequence
@@ -23,8 +24,22 @@ from ._stage_model import replace_invalid_translations
 from ._translation_computation import interpret_translation
 from ._translation_computation import multi_peak_max
 from ._translation_computation import pcm
+from ._typing_utils import BoolArray
 from ._typing_utils import Float
 from ._typing_utils import NumArray
+
+
+@dataclass
+class ElipticEnvelopPredictor:
+    contamination: float
+    epsilon: float
+    random_seed: int
+
+    def __call__(self, X: NumArray) -> BoolArray:
+        ee = EllipticEnvelope(contamination=self.contamination)
+        rng = np.random.default_rng(self.random_seed)
+        X = rng.normal(size=X.shape) * self.epsilon + X
+        return ee.fit_predict(X) > 0
 
 
 def stitch_images(
@@ -173,10 +188,10 @@ def stitch_images(
             for j, key in enumerate(["ncc", "y", "x"]):
                 grid.loc[i2, f"{direction}_{key}_first"] = max_peak[j]
 
-    predictor = EllipticEnvelope(contamination=0.4)
     # TODO make threshold adjustable
     assert np.any(grid["top_ncc_first"] > 0.5), "there is no good top pair"
     assert np.any(grid["left_ncc_first"] > 0.5), "there is no good left pair"
+    predictor = ElipticEnvelopPredictor(contamination=0.4, epsilon=0.01, random_seed=0)
     left_displacement = compute_image_overlap2(
         grid[grid["left_ncc_first"] > 0.5], "left", sizeY, sizeX, predictor
     )
