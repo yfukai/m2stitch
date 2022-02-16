@@ -10,8 +10,8 @@ from typing import Union
 
 import numpy as np
 import pandas as pd
+import ray
 from sklearn.covariance import EllipticEnvelope
-from tqdm import tqdm
 
 from ._constrained_refinement import refine_translations
 from ._global_optimization import compute_final_position
@@ -157,36 +157,44 @@ def stitch_images(
                 )
 
     ###### translationComputation ######
-    for direction in ["left", "top"]:
-        for i2, g in tqdm(grid.iterrows(), total=len(grid)):
-            i1 = g[direction]
-            if pd.isna(i1):
-                continue
-            image1 = images[i1]
-            image2 = images[i2]
+    @ray.remote
+    def calc_first_translation(i2, direction):
+        g = grid.loc[i2]
+        i1 = g[direction]
+        if pd.isna(i1):
+            return None
+        image1 = images[i1]
+        image2 = images[i2]
 
-            PCM = pcm(image1, image2).real
-            if position_initial_guess is not None:
+        PCM = pcm(image1, image2).real
+        if position_initial_guess is not None:
 
-                def get_lims(dimension, size):
-                    val = g[f"{direction}_{dimension}_init_guess"]
-                    r = size * overlap_diff_threshold / 100.0
-                    return np.round([val - r, val + r]).astype(np.int64)
+            def get_lims(dimension, size):
+                val = g[f"{direction}_{dimension}_init_guess"]
+                r = size * overlap_diff_threshold / 100.0
+                return np.round([val - r, val + r]).astype(np.int64)
 
-                lims = np.array(
-                    [
-                        get_lims(dimension, size)
-                        for dimension, size in zip("yx", [sizeY, sizeX])
-                    ]
-                )
-            else:
-                lims = np.array([[-sizeY, sizeY], [-sizeX, sizeX]])
-            yins, xins, _ = multi_peak_max(PCM)
-            max_peak = interpret_translation(
-                image1, image2, yins, xins, *lims[0], *lims[1]
+            lims = np.array(
+                [
+                    get_lims(dimension, size)
+                    for dimension, size in zip("yx", [sizeY, sizeX])
+                ]
             )
-            for j, key in enumerate(["ncc", "y", "x"]):
-                grid.loc[i2, f"{direction}_{key}_first"] = max_peak[j]
+        else:
+            lims = np.array([[-sizeY, sizeY], [-sizeX, sizeX]])
+        yins, xins, _ = multi_peak_max(PCM)
+        max_peak = interpret_translation(image1, image2, yins, xins, *lims[0], *lims[1])
+        return max_peak
+
+    for direction in ["left", "top"]:
+        print("computing translation for", direction)
+        res = ray.get(
+            [calc_first_translation.remote(i2, direction) for i2 in grid.index]
+        )
+        for i2, max_peak in zip(grid.index, res):
+            if max_peak is not None:
+                for j, key in enumerate(["ncc", "y", "x"]):
+                    grid.loc[i2, f"{direction}_{key}_first"] = max_peak[j]
 
     # TODO make threshold adjustable
     assert np.any(grid["top_ncc_first"] > 0.5), "there is no good top pair"
