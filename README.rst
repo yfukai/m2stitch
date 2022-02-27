@@ -35,13 +35,6 @@ M2Stitch
    :target: https://doi.org/10.5281/zenodo.5139597
    :alt: Zenodo
 
-**Note** :memo: : one might also be interested in another Python-written stitching tool
-ASHLAR_ (bioRxiv_),
-with a comparable performance to that of MIST and additional features.
-
-.. _ASHLAR: https://github.com/labsyspharm/ashlar
-.. _bioRxiv: https://www.biorxiv.org/content/10.1101/2021.04.20.440625v1
-
 Features
 --------
 
@@ -105,3 +98,14 @@ This project was generated from `@cjolowicz`_'s `Hypermodern Python Cookiecutter
 .. github-only
 .. _Contributor Guide: CONTRIBUTING.rst
 .. _Usage: https://m2stitch.readthedocs.io/en/latest/usage.html
+
+Other stitching programs
+-------
+ :memo: : one might also be interested in another Python-written stitching tool
+ASHLAR_ (bioRxiv_),
+with a comparable performance to that of MIST and additional features.
+
+.. _ASHLAR: https://github.com/labsyspharm/ashlar
+.. _bioRxiv: https://www.biorxiv.org/content/10.1101/2021.04.20.440625v1
+
+
