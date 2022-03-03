@@ -6,6 +6,7 @@ import numpy as np
 import pandas as pd
 
 from ._typing_utils import Float
+from ._typing_utils import FloatArray
 from ._typing_utils import Int
 
 
@@ -35,10 +36,10 @@ def compute_image_overlap2(
     ValueError
         when direction is not in ["left","top"], raises ValueError
     """
-    translation = np.array(
+    translation: FloatArray = np.array(
         [
-            grid[f"{direction}_y_first"].values / sizeY,
-            grid[f"{direction}_x_first"].values / sizeX,
+            np.array(grid[f"{direction}_y_first"].values, dtype=np.float64) / sizeY,
+            np.array(grid[f"{direction}_x_first"].values, dtype=np.float64) / sizeX,
         ]
     )
     translation = translation[:, np.all(np.isfinite(translation), axis=0)]
