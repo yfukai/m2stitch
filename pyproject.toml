@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "m2stitch"
-version = "0.6.0"
+version = "0.7.0"
 description = "M2Stitch"
 authors = ["Yohsuke Fukai <ysk@yfukai.net>"]
 license = "MIT"
@@ -33,6 +33,7 @@ networkx = "^2.5.1"
 scipy = "^1.6.3"
 tqdm = "^4.60.0"
 scikit-learn = "^1.0.2"
+ray = "^1.8.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^7.0.0"
