@@ -107,5 +107,3 @@ with a comparable performance to that of MIST and additional features.
 
 .. _ASHLAR: https://github.com/labsyspharm/ashlar
 .. _bioRxiv: https://www.biorxiv.org/content/10.1101/2021.04.20.440625v1
-
-
