@@ -38,8 +38,8 @@ def compute_image_overlap2(
     """
     translation: FloatArray = np.array(
         [
-            grid[f"{direction}_y_first"].astype(np.float64).values / sizeY,
-            grid[f"{direction}_x_first"].astype(np.float64).values / sizeX,
+            np.array(grid[f"{direction}_y_first"].values, dtype=np.float64) / sizeY,
+            np.array(grid[f"{direction}_x_first"].values, dtype=np.float64) / sizeX,
         ]
     )
     translation = translation[:, np.all(np.isfinite(translation), axis=0)]
