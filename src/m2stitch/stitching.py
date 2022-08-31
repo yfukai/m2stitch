@@ -52,6 +52,7 @@ def stitch_images(
     pou: Float = 3,
     full_output: bool = False,
     row_col_transpose: bool = True,
+    ncc_threshold: Float = 0.5,
 ) -> Tuple[pd.DataFrame, dict]:
     """Compute image positions for stitching.
 
@@ -87,6 +88,10 @@ def stitch_images(
     row_col_transpose : bool, default True
         if True, row and col indices are switched.
         only for compatibility and the default value will be False in the future.
+
+    ncc_threshold : Float, default 0.5
+        the threshold of the normalized cross correlation used to select the initial
+        stitched pairs.
 
     Returns
     -------
@@ -188,26 +193,26 @@ def stitch_images(
             for j, key in enumerate(["ncc", "y", "x"]):
                 grid.loc[i2, f"{direction}_{key}_first"] = max_peak[j]
 
-    # TODO make threshold adjustable
-    assert np.any(grid["top_ncc_first"] > 0.5), "there is no good top pair"
-    assert np.any(grid["left_ncc_first"] > 0.5), "there is no good left pair"
+    # threshold is now adjustable
+    assert np.any(grid["top_ncc_first"] > ncc_threshold), "there is no good top pair, (try lowering the ncc_threshold)"
+    assert np.any(grid["left_ncc_first"] > ncc_threshold), "there is no good left pair, (try lowering the ncc_threshold)"
     predictor = ElipticEnvelopPredictor(contamination=0.4, epsilon=0.01, random_seed=0)
     left_displacement = compute_image_overlap2(
-        grid[grid["left_ncc_first"] > 0.5], "left", sizeY, sizeX, predictor
+        grid[grid["left_ncc_first"] > ncc_threshold], "left", sizeY, sizeX, predictor
     )
     top_displacement = compute_image_overlap2(
-        grid[grid["top_ncc_first"] > 0.5], "top", sizeY, sizeX, predictor
+        grid[grid["top_ncc_first"] > ncc_threshold], "top", sizeY, sizeX, predictor
     )
     overlap_top = np.clip(100 - top_displacement[0] * 100, pou, 100 - pou)
     overlap_left = np.clip(100 - left_displacement[1] * 100, pou, 100 - pou)
 
     ### compute_repeatability ###
     grid["top_valid1"] = filter_by_overlap_and_correlation(
-        grid["top_y_first"], grid["top_ncc_first"], overlap_top, sizeY, pou
+        grid["top_y_first"], grid["top_ncc_first"], overlap_top, sizeY, pou, ncc_threshold
     )
     grid["top_valid2"] = filter_outliers(grid["top_y_first"], grid["top_valid1"])
     grid["left_valid1"] = filter_by_overlap_and_correlation(
-        grid["left_x_first"], grid["left_ncc_first"], overlap_left, sizeX, pou
+        grid["left_x_first"], grid["left_ncc_first"], overlap_left, sizeX, pou, ncc_threshold
     )
     grid["left_valid2"] = filter_outliers(grid["left_x_first"], grid["left_valid1"])
 
@@ -224,7 +229,7 @@ def stitch_images(
         rs.append(0)
     r = np.max(rs)
 
-    grid = filter_by_repeatability(grid, r)
+    grid = filter_by_repeatability(grid, r, ncc_threshold)
     grid = replace_invalid_translations(grid)
 
     grid = refine_translations(images, grid, r)
