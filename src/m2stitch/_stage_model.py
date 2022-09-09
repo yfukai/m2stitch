@@ -50,7 +50,12 @@ def compute_image_overlap2(
 
 
 def filter_by_overlap_and_correlation(
-    T: pd.Series, ncc: pd.Series, overlap: Float, size: Int, pou: Float = 3, ncc_threshold: Float = 0.5
+    T: pd.Series,
+    ncc: pd.Series,
+    overlap: Float,
+    size: Int,
+    pou: Float = 3,
+    ncc_threshold: Float = 0.5,
 ) -> pd.Series:
     """Filter the translation values by estimated overlap.
 
@@ -100,10 +105,13 @@ def filter_outliers(T: pd.Series, isvalid: pd.Series, w: Float = 1.5) -> pd.Seri
         return isvalid
     q1, _, q3 = np.quantile(valid_T, (0.25, 0.5, 0.75))
     iqd = max(1, np.abs(q3 - q1))
-    return isvalid & T.between(q1 - w * iqd, q3 + w * iqd)
+    isvalid = isvalid & T.between(q1 - w * iqd, q3 + w * iqd)
+    return isvalid
 
 
-def filter_by_repeatability(grid: pd.DataFrame, r: Float, ncc_threshold: Float) -> pd.DataFrame:
+def filter_by_repeatability(
+    grid: pd.DataFrame, r: Float, ncc_threshold: Float
+) -> pd.DataFrame:
     """Filter the stage translation by repeatability.
 
     Parameters
@@ -127,11 +135,13 @@ def filter_by_repeatability(grid: pd.DataFrame, r: Float, ncc_threshold: Float) 
         else:
             medx = grp[isvalid]["left_y_first"].median()
             medy = grp[isvalid]["left_x_first"].median()
-            grid.loc[grp.index, "left_valid3"] = (
+            isvalid = (
                 grp["left_y_first"].between(medx - r, medx + r)
                 & grp["left_x_first"].between(medy - r, medy + r)
                 & (grp["left_ncc_first"] > ncc_threshold)
             )
+            assert any(isvalid), "all left pairs are invalid"
+            grid.loc[grp.index, "left_valid3"] = isvalid
     for _, grp in grid.groupby("row"):
         isvalid = grp["top_valid2"]
         if not any(isvalid):
@@ -139,11 +149,13 @@ def filter_by_repeatability(grid: pd.DataFrame, r: Float, ncc_threshold: Float) 
         else:
             medx = grp[isvalid]["top_y_first"].median()
             medy = grp[isvalid]["top_x_first"].median()
-            grid.loc[grp.index, "top_valid3"] = (
+            isvalid = (
                 grp["top_y_first"].between(medx - r, medx + r)
                 & grp["top_x_first"].between(medy - r, medy + r)
                 & (grp["top_ncc_first"] > ncc_threshold)
             )
+            assert any(isvalid), "all left pairs are invalid"
+            grid.loc[grp.index, "top_valid3"] = isvalid
     return grid
 
 
