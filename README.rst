@@ -100,7 +100,7 @@ This project was generated from `@cjolowicz`_'s `Hypermodern Python Cookiecutter
 .. _Usage: https://m2stitch.readthedocs.io/en/latest/usage.html
 
 Other Python stitching programs
--------
+-------------------------------
 One might also be interested in another Python-written stitching tool
 ASHLAR_ (bioRxiv_),
 with a comparable performance to that of MIST and additional features.
