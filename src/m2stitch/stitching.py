@@ -221,7 +221,6 @@ def stitch_images(
         pou,
         ncc_threshold,
     )
-    assert any(grid["top_valid1"]), "all top paris are invalid at step 1"
     grid["top_valid2"] = filter_outliers(grid["top_y_first"], grid["top_valid1"])
     grid["left_valid1"] = filter_by_overlap_and_correlation(
         grid["left_x_first"],
@@ -231,7 +230,6 @@ def stitch_images(
         pou,
         ncc_threshold,
     )
-    assert any(grid["left_valid1"]), "all left paris are invalid at step 1"
     grid["left_valid2"] = filter_outliers(grid["left_x_first"], grid["left_valid1"])
 
     rs = []

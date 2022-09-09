@@ -105,8 +105,7 @@ def filter_outliers(T: pd.Series, isvalid: pd.Series, w: Float = 1.5) -> pd.Seri
         return isvalid
     q1, _, q3 = np.quantile(valid_T, (0.25, 0.5, 0.75))
     iqd = max(1, np.abs(q3 - q1))
-    isvalid = isvalid & T.between(q1 - w * iqd, q3 + w * iqd)
-    return isvalid
+    return isvalid & T.between(q1 - w * iqd, q3 + w * iqd)
 
 
 def filter_by_repeatability(
