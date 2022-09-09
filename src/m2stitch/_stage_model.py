@@ -135,13 +135,11 @@ def filter_by_repeatability(
         else:
             medx = grp[isvalid]["left_y_first"].median()
             medy = grp[isvalid]["left_x_first"].median()
-            isvalid = (
+            grid.loc[grp.index, "left_valid3"] = (
                 grp["left_y_first"].between(medx - r, medx + r)
                 & grp["left_x_first"].between(medy - r, medy + r)
                 & (grp["left_ncc_first"] > ncc_threshold)
             )
-            assert any(isvalid), "all left pairs are invalid"
-            grid.loc[grp.index, "left_valid3"] = isvalid
     for _, grp in grid.groupby("row"):
         isvalid = grp["top_valid2"]
         if not any(isvalid):
@@ -149,13 +147,11 @@ def filter_by_repeatability(
         else:
             medx = grp[isvalid]["top_y_first"].median()
             medy = grp[isvalid]["top_x_first"].median()
-            isvalid = (
+            grid.loc[grp.index, "top_valid3"] = (
                 grp["top_y_first"].between(medx - r, medx + r)
                 & grp["top_x_first"].between(medy - r, medy + r)
                 & (grp["top_ncc_first"] > ncc_threshold)
             )
-            assert any(isvalid), "all left pairs are invalid"
-            grid.loc[grp.index, "top_valid3"] = isvalid
     return grid
 
 
