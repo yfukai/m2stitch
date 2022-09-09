@@ -50,7 +50,7 @@ def compute_image_overlap2(
 
 
 def filter_by_overlap_and_correlation(
-    T: pd.Series, ncc: pd.Series, overlap: Float, size: Int, pou: Float = 3, ncc_threshold: Float = 0.5
+    T: pd.Series, ncc: pd.Series, overlap: Float, size: Int, pou: Float = 3
 ) -> pd.Series:
     """Filter the translation values by estimated overlap.
 
@@ -59,15 +59,13 @@ def filter_by_overlap_and_correlation(
     T : pd.Series
         the translation
     ncc : pd.Series
-        the normalized cross correlation, this value should be > ncc_threshold to be valid
+        the normalized cross correlation, this value should be > 0.5 to be valid
     overlap : Float
         the estimated overlap
     size : Int
         the size of image dimension
     pou : Float, optional
         the percentile margin for error, by default 3
-    ncc_threshold : Float, default 0.5
-        the threshold on the given ncc values, only values higher are considered
 
     Returns
     -------
@@ -75,7 +73,7 @@ def filter_by_overlap_and_correlation(
         whether the translation is within the estimated limit
     """
     r = (size * (100 - overlap - pou) / 100, size * (100 - overlap + pou) / 100)
-    return (T.between(*r)) & (ncc > ncc_threshold)
+    return (T.between(*r)) & (ncc > 0.5)
 
 
 def filter_outliers(T: pd.Series, isvalid: pd.Series, w: Float = 1.5) -> pd.Series:
@@ -103,7 +101,7 @@ def filter_outliers(T: pd.Series, isvalid: pd.Series, w: Float = 1.5) -> pd.Seri
     return isvalid & T.between(q1 - w * iqd, q3 + w * iqd)
 
 
-def filter_by_repeatability(grid: pd.DataFrame, r: Float, ncc_threshold: Float) -> pd.DataFrame:
+def filter_by_repeatability(grid: pd.DataFrame, r: Float) -> pd.DataFrame:
     """Filter the stage translation by repeatability.
 
     Parameters
@@ -112,8 +110,6 @@ def filter_by_repeatability(grid: pd.DataFrame, r: Float, ncc_threshold: Float) 
         the dataframe for the grid position, with columns "{left|top}_{x|y|ncc}_first"
     r : Float
         the repeatability value
-    ncc_threshold : Float
-        the threshold for ncc values, only values higher will be considered
 
     Returns
     -------
@@ -130,7 +126,7 @@ def filter_by_repeatability(grid: pd.DataFrame, r: Float, ncc_threshold: Float) 
             grid.loc[grp.index, "left_valid3"] = (
                 grp["left_y_first"].between(medx - r, medx + r)
                 & grp["left_x_first"].between(medy - r, medy + r)
-                & (grp["left_ncc_first"] > ncc_threshold)
+                & (grp["left_ncc_first"] > 0.5)
             )
     for _, grp in grid.groupby("row"):
         isvalid = grp["top_valid2"]
@@ -142,7 +138,7 @@ def filter_by_repeatability(grid: pd.DataFrame, r: Float, ncc_threshold: Float) 
             grid.loc[grp.index, "top_valid3"] = (
                 grp["top_y_first"].between(medx - r, medx + r)
                 & grp["top_x_first"].between(medy - r, medy + r)
-                & (grp["top_ncc_first"] > ncc_threshold)
+                & (grp["top_ncc_first"] > 0.5)
             )
     return grid
 
