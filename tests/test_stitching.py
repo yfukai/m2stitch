@@ -86,8 +86,8 @@ def test_stitching_with_varied_ncc(
     rows = props["row"].to_list()
 
     inds = np.isin(cols, [1, 2, 3]) & np.isin(rows, [3, 4])
-    cols = np.array(cols)[inds]
-    rows = np.array(rows)[inds]
+    cols = list(np.array(cols)[inds])
+    rows = list(np.array(rows)[inds])
     testimages = testimages[inds]
 
     with pytest.raises(AssertionError):
