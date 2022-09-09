@@ -36,6 +36,8 @@ class ElipticEnvelopPredictor:
     random_seed: int
 
     def __call__(self, X: NumArray) -> BoolArray:
+        if len(X) < 2:
+            return np.ones(len(X), dtype=bool)
         ee = EllipticEnvelope(contamination=self.contamination)
         rng = np.random.default_rng(self.random_seed)
         X = rng.normal(size=X.shape) * self.epsilon + X
@@ -194,8 +196,12 @@ def stitch_images(
                 grid.loc[i2, f"{direction}_{key}_first"] = max_peak[j]
 
     # threshold is now adjustable
-    assert np.any(grid["top_ncc_first"] > ncc_threshold), "there is no good top pair, (try lowering the ncc_threshold)"
-    assert np.any(grid["left_ncc_first"] > ncc_threshold), "there is no good left pair, (try lowering the ncc_threshold)"
+    assert np.any(
+        grid["top_ncc_first"] > ncc_threshold
+    ), "there is no good top pair, (try lowering the ncc_threshold)"
+    assert np.any(
+        grid["left_ncc_first"] > ncc_threshold
+    ), "there is no good left pair, (try lowering the ncc_threshold)"
     predictor = ElipticEnvelopPredictor(contamination=0.4, epsilon=0.01, random_seed=0)
     left_displacement = compute_image_overlap2(
         grid[grid["left_ncc_first"] > ncc_threshold], "left", sizeY, sizeX, predictor
@@ -208,11 +214,21 @@ def stitch_images(
 
     ### compute_repeatability ###
     grid["top_valid1"] = filter_by_overlap_and_correlation(
-        grid["top_y_first"], grid["top_ncc_first"], overlap_top, sizeY, pou, ncc_threshold
+        grid["top_y_first"],
+        grid["top_ncc_first"],
+        overlap_top,
+        sizeY,
+        pou,
+        ncc_threshold,
     )
     grid["top_valid2"] = filter_outliers(grid["top_y_first"], grid["top_valid1"])
     grid["left_valid1"] = filter_by_overlap_and_correlation(
-        grid["left_x_first"], grid["left_ncc_first"], overlap_left, sizeX, pou, ncc_threshold
+        grid["left_x_first"],
+        grid["left_ncc_first"],
+        overlap_left,
+        sizeX,
+        pou,
+        ncc_threshold,
     )
     grid["left_valid2"] = filter_outliers(grid["left_x_first"], grid["left_valid1"])
 

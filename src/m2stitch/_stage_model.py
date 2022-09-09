@@ -50,7 +50,12 @@ def compute_image_overlap2(
 
 
 def filter_by_overlap_and_correlation(
-    T: pd.Series, ncc: pd.Series, overlap: Float, size: Int, pou: Float = 3, ncc_threshold: Float = 0.5
+    T: pd.Series,
+    ncc: pd.Series,
+    overlap: Float,
+    size: Int,
+    pou: Float = 3,
+    ncc_threshold: Float = 0.5,
 ) -> pd.Series:
     """Filter the translation values by estimated overlap.
 
@@ -103,7 +108,9 @@ def filter_outliers(T: pd.Series, isvalid: pd.Series, w: Float = 1.5) -> pd.Seri
     return isvalid & T.between(q1 - w * iqd, q3 + w * iqd)
 
 
-def filter_by_repeatability(grid: pd.DataFrame, r: Float, ncc_threshold: Float) -> pd.DataFrame:
+def filter_by_repeatability(
+    grid: pd.DataFrame, r: Float, ncc_threshold: Float
+) -> pd.DataFrame:
     """Filter the stage translation by repeatability.
 
     Parameters
