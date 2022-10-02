@@ -325,11 +325,14 @@ test = ["hypothesis (>=5.5.3)", "pytest (>=6.0)", "pytest-xdist (>=1.31)"]
 
 [[package]]
 name = "pandas-stubs"
-version = "1.2.0.58"
-description = "Type annotations for Pandas"
+version = "1.5.0.220926"
+description = "Type annotations for pandas"
 category = "main"
 optional = false
-python-versions = "*"
+python-versions = ">=3.8,<3.11"
+
+[package.dependencies]
+types-pytz = ">=2022.1.1"
 
 [[package]]
 name = "platformdirs"
@@ -813,6 +816,14 @@ doc = ["sphinx-autodoc-typehints (>=1.2.0)", "sphinx-rtd-theme"]
 test = ["mypy", "pytest", "typing-extensions"]
 
 [[package]]
+name = "types-pytz"
+version = "2022.2.1.0"
+description = "Typing stubs for pytz"
+category = "main"
+optional = false
+python-versions = "*"
+
+[[package]]
 name = "typing-extensions"
 version = "4.1.1"
 description = "Backported and Experimental Type Hints for Python 3.6+"
@@ -1170,8 +1181,8 @@ pandas = [
     {file = "pandas-1.5.0.tar.gz", hash = "sha256:3ee61b881d2f64dd90c356eb4a4a4de75376586cd3c9341c6c0fcaae18d52977"},
 ]
 pandas-stubs = [
-    {file = "pandas-stubs-1.2.0.58.tar.gz", hash = "sha256:f0e0e70887f85a5895887bdf7cee34e3881d5c7f95457304e8a9287401ae4be8"},
-    {file = "pandas_stubs-1.2.0.58-py3-none-any.whl", hash = "sha256:4497e8ce506e29b202955ebc653d181833a9745076bc911c2111e09095988440"},
+    {file = "pandas-stubs-1.5.0.220926.tar.gz", hash = "sha256:e0f69466cbd8cf1da137b5899e69d9d150648dd5f0398db0e6aeaefe3b2c7a76"},
+    {file = "pandas_stubs-1.5.0.220926-py3-none-any.whl", hash = "sha256:490b71dfa15eb862d8e0c2dc3af50dbb59546e3878a67822ec35f3ce0bc342c4"},
 ]
 platformdirs = [
     {file = "platformdirs-2.5.1-py3-none-any.whl", hash = "sha256:bcae7cab893c2d310a711b70b24efb93334febe65f8de776ee320b517471e227"},
@@ -1466,6 +1477,10 @@ tqdm = [
 typeguard = [
     {file = "typeguard-2.13.3-py3-none-any.whl", hash = "sha256:5e3e3be01e887e7eafae5af63d1f36c849aaa94e3a0112097312aabfa16284f1"},
     {file = "typeguard-2.13.3.tar.gz", hash = "sha256:00edaa8da3a133674796cf5ea87d9f4b4c367d77476e185e80251cc13dfbb8c4"},
+]
+types-pytz = [
+    {file = "types-pytz-2022.2.1.0.tar.gz", hash = "sha256:47cfb19c52b9f75896440541db392fd312a35b279c6307a531db71152ea63e2b"},
+    {file = "types_pytz-2022.2.1.0-py3-none-any.whl", hash = "sha256:50ead2254b524a3d4153bc65d00289b66898060d2938e586170dce918dbaf3b3"},
 ]
 typing-extensions = [
     {file = "typing_extensions-4.1.1-py3-none-any.whl", hash = "sha256:21c85e0fe4b9a155d0799430b0ad741cdce7e359660ccbd8b530613e8df88ce2"},
