@@ -21,6 +21,7 @@ except ImportError:
 
 package = "m2stitch"
 python_versions = ["3.10", "3.9", "3.8"]
+safety_ignore = [44717, 44715, 44716, 51457]  # ignore numpy 1.21 CVEs and py 1.11.0
 nox.options.sessions = (
     "pre-commit",
     "safety",
@@ -102,9 +103,12 @@ def safety(session: Session) -> None:
     requirements = session.poetry.export_requirements()
     session.install("safety")
     session.run(
-        "safety", "check", "--full-report", f"--file={requirements}", "--ignore=44715"
+        "safety",
+        "check",
+        "--full-report",
+        f"--file={requirements}",
+        *[f"--ignore={ignore}" for ignore in safety_ignore],
     )
-    # ignore numpy update for a while as resolved in 1.22 (2022.2.13)
 
 
 @session(python=python_versions)
