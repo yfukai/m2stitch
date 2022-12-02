@@ -75,3 +75,31 @@ def test_stitching_with_pos(test_image_path: Tuple[npt.NDArray, pd.DataFrame]) -
     assert np.array_equal(result_df.index, props.index)
     assert all(np.abs(result_df["y_pos"] - props["y_pos"]) <= props["allowed_error"])
     assert all(np.abs(result_df["x_pos"] - props["x_pos"]) <= props["allowed_error"])
+
+
+def test_stitching_with_varied_ncc(
+    test_image_path: Tuple[npt.NDArray, pd.DataFrame]
+) -> None:
+    testimages, props = test_image_path
+    """It exits with a status code of zero."""
+    cols = props["col"].to_list()
+    rows = props["row"].to_list()
+
+    inds = np.isin(cols, [1, 2, 3]) & np.isin(rows, [3, 4])
+    cols = list(np.array(cols)[inds])
+    rows = list(np.array(rows)[inds])
+    testimages = testimages[inds]
+
+    with pytest.raises(AssertionError):
+        result_df, _ = stitch_images(
+            testimages, rows, cols, row_col_transpose=False, pou=100
+        )
+
+    result_df, _ = stitch_images(
+        testimages, rows, cols, row_col_transpose=False, ncc_threshold=0.01, pou=100
+    )
+
+
+#    assert np.array_equal(result_df.index, props.index)
+#    assert all(np.abs(result_df["y_pos"] - props["y_pos"]) <= props["allowed_error"])
+#    assert all(np.abs(result_df["x_pos"] - props["x_pos"]) <= props["allowed_error"])
