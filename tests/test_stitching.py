@@ -18,6 +18,18 @@ def test_image_path(shared_datadir: str) -> Tuple[npt.NDArray, pd.DataFrame]:
     return (testimages, props)
 
 
+@pytest.fixture
+def test_image_path_mimuelle2212(
+    shared_datadir: str,
+) -> Tuple[npt.NDArray, pd.DataFrame]:
+    testimages = np.array(
+        np.load(path.join(shared_datadir, "images_mimuelle2212_2.npz"))["arr_0"]
+    )
+    props = pd.read_csv(path.join(shared_datadir, "images_mimuelle2212.csv"))
+    assert np.array_equal(props.index, np.arange(testimages.shape[0]))
+    return (testimages, props)
+
+
 def test_stitching(test_image_path: Tuple[npt.NDArray, pd.DataFrame]) -> None:
     testimages, props = test_image_path
     """It exits with a status code of zero."""
@@ -27,6 +39,18 @@ def test_stitching(test_image_path: Tuple[npt.NDArray, pd.DataFrame]) -> None:
     assert np.array_equal(result_df.index, props.index)
     assert all(np.abs(result_df["y_pos"] - props["y_pos"]) <= props["allowed_error"])
     assert all(np.abs(result_df["x_pos"] - props["x_pos"]) <= props["allowed_error"])
+
+
+def test_stitching_mimuelle2212(
+    test_image_path_mimuelle2212: Tuple[npt.NDArray, pd.DataFrame]
+) -> None:
+    testimages, props = test_image_path_mimuelle2212
+    """It exits with a status code of zero."""
+    cols = props["col"].to_list()
+    rows = props["row"].to_list()
+    result_df, _ = stitch_images(
+        testimages, rows, cols, row_col_transpose=False, ncc_threshold=0.1
+    )
 
 
 def test_stitching_init_guess(
