@@ -15,7 +15,6 @@ tests/data/sparse_example/
 /prof/
 profile
 tests/OneDrive_1_2022-12-24.zip
-tests/data/images_mimuelle2212.npy
-tests/data/images_mumuelle2212.csv
 tests/OneDrive_1_2022-12-24/images.npy
 tests/OneDrive_1_2022-12-24/minimal_notebook.ipynb
+tests/data/images_mimuelle2212.npy
