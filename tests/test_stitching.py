@@ -22,7 +22,9 @@ def test_image_path(shared_datadir: str) -> Tuple[npt.NDArray, pd.DataFrame]:
 def test_image_path_mimuelle2212(
     shared_datadir: str,
 ) -> Tuple[npt.NDArray, pd.DataFrame]:
-    testimages = np.load(path.join(shared_datadir, "images_mimuelle2212_2.npz"))
+    testimages = np.load(path.join(shared_datadir, "images_mimuelle2212_2.npz"))[
+        "arr_0"
+    ]
     props = pd.read_csv(path.join(shared_datadir, "images_mimuelle2212.csv"))
     assert np.array_equal(props.index, np.arange(testimages.shape[0]))
     return (testimages, props)
