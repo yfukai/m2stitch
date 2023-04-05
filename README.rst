@@ -31,8 +31,8 @@ M2Stitch
 .. |Black| image:: https://img.shields.io/badge/code%20style-black-000000.svg
    :target: https://github.com/psf/black
    :alt: Black
-.. |Zenodo| image:: https://zenodo.org/badge/DOI/10.5281/zenodo.5139597.svg
-   :target: https://doi.org/10.5281/zenodo.5139597
+.. |Zenodo| image:: https://zenodo.org/badge/DOI/10.5281/zenodo.5139596.svg
+   :target: https://doi.org/10.5281/zenodo.5139596
    :alt: Zenodo
 
 Features
@@ -98,6 +98,20 @@ This project was generated from `@cjolowicz`_'s `Hypermodern Python Cookiecutter
 .. github-only
 .. _Contributor Guide: CONTRIBUTING.rst
 .. _Usage: https://m2stitch.readthedocs.io/en/latest/usage.html
+
+Citation
+--------
+
+If you use this program for your research, please cite it and help us build more.
+
+.. code-block:: bib
+
+   @misc{m2stitch,
+      author = {Yohsuke T. Fukai},
+      title = {m2stitch},
+      year  = {2021},
+      url   = {https://doi.org/10.5281/zenodo.5139596},
+   }
 
 Other Python stitching programs
 -------------------------------
