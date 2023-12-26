@@ -30,7 +30,7 @@ from ._typing_utils import NumArray
 
 
 @dataclass
-class ElipticEnvelopPredictor:
+class EllipticEnvelopePredictor:
     contamination: float
     epsilon: float
     random_seed: int
@@ -55,6 +55,7 @@ def stitch_images(
     full_output: bool = False,
     row_col_transpose: bool = True,
     ncc_threshold: Float = 0.5,
+    outlier_predictor_name: str = "elliptic_envelope",
 ) -> Tuple[pd.DataFrame, dict]:
     """Compute image positions for stitching.
 
@@ -95,6 +96,10 @@ def stitch_images(
         the threshold of the normalized cross correlation used to select the initial
         stitched pairs.
 
+    outlier_predictor_name : str, default "elliptic_envelope"
+        the name of the outlier predictor.
+        "elliptic_envelope" or "none" are supported.
+
     Returns
     -------
     grid : pd.DataFrame
@@ -104,6 +109,14 @@ def stitch_images(
     prop_dict : dict
         the dict of estimated parameters. (to be documented)
     """
+
+    if outlier_predictor_name == "elliptic_envelope":
+        outlier_predictor = EllipticEnvelopePredictor(0.1, 0.1, 0)
+    elif outlier_predictor_name == "none":
+        outlier_predictor = None
+    else:
+        raise ValueError(f"Unknown outlier_predictor_name: {outlier_predictor_name}")
+
     images = np.array(images)
     assert (position_indices is not None) or (rows is not None and cols is not None)
     if position_indices is None:
@@ -202,12 +215,19 @@ def stitch_images(
     assert np.any(
         grid["left_ncc_first"] > ncc_threshold
     ), "there is no good left pair, (try lowering the ncc_threshold)"
-    predictor = ElipticEnvelopPredictor(contamination=0.4, epsilon=0.01, random_seed=0)
     left_displacement = compute_image_overlap2(
-        grid[grid["left_ncc_first"] > ncc_threshold], "left", sizeY, sizeX, predictor
+        grid[grid["left_ncc_first"] > ncc_threshold],
+        "left",
+        sizeY,
+        sizeX,
+        outlier_predictor,
     )
     top_displacement = compute_image_overlap2(
-        grid[grid["top_ncc_first"] > ncc_threshold], "top", sizeY, sizeX, predictor
+        grid[grid["top_ncc_first"] > ncc_threshold],
+        "top",
+        sizeY,
+        sizeX,
+        outlier_predictor,
     )
     overlap_top = np.clip(100 - top_displacement[0] * 100, pou, 100 - pou)
     overlap_left = np.clip(100 - left_displacement[1] * 100, pou, 100 - pou)

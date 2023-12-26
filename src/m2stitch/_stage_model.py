@@ -1,5 +1,6 @@
 import itertools
 from typing import Callable
+from typing import Optional
 from typing import Tuple
 
 import numpy as np
@@ -11,7 +12,11 @@ from ._typing_utils import Int
 
 
 def compute_image_overlap2(
-    grid: pd.DataFrame, direction: str, sizeY: Int, sizeX: Int, predictor: Callable
+    grid: pd.DataFrame,
+    direction: str,
+    sizeY: Int,
+    sizeX: Int,
+    predictor: Optional[Callable],
 ) -> Tuple[Float, ...]:
     """Compute the value of the image overlap.
 
@@ -25,6 +30,8 @@ def compute_image_overlap2(
         the image width
     sizeX : Int
         the image height
+    predictor : Optional[Callable], optional
+        the predictor function of outliers
 
     Returns
     -------
@@ -43,8 +50,12 @@ def compute_image_overlap2(
         ]
     )
     translation = translation[:, np.all(np.isfinite(translation), axis=0)]
-    c = predictor(translation.T)
-    res = np.median(translation[:, c == 1], axis=1)
+    if predictor is not None:
+        c = predictor(translation.T)
+        ind = c == 1
+    else:
+        ind = np.ones(translation.shape[1], dtype=bool)
+    res = np.median(translation[:, ind], axis=1)
     assert len(res) == 2
     return tuple(res)
 
