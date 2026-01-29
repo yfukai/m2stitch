@@ -163,7 +163,7 @@ def interpret_translation(
     assert np.all(0 <= yins) and np.all(yins < sizeY)
     assert np.all(0 <= xins) and np.all(xins < sizeX)
 
-    _ncc = -np.infty
+    _ncc = -np.inf
     y = 0
     x = 0
 
