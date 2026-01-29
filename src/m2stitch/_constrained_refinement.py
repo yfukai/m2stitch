@@ -1,5 +1,6 @@
 import itertools
 from typing import Callable
+from typing import cast
 from typing import Tuple
 
 import numpy as np
@@ -42,8 +43,10 @@ def find_local_max_integer_constrained(
     """
     init_x = np.array(init_x)
     limits = np.array(limits)
-    dim = init_x.shape[0]
-    assert limits.shape[0] == dim
+    init_shape = cast(tuple[int, ...], init_x.shape)
+    dim = init_shape[0]
+    limits_shape = cast(tuple[int, ...], limits.shape)
+    assert limits_shape[0] == dim
     value = func(init_x)
     x = init_x
     for _ in range(max_iter):
