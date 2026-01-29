@@ -11,19 +11,17 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - { python-version: 3.9, os: ubuntu-latest, session: "pre-commit" }
-          - { python-version: 3.9, os: ubuntu-latest, session: "safety" }
-          - { python-version: 3.9, os: ubuntu-latest, session: "mypy" }
-          #          - { python-version: 3.8, os: ubuntu-latest, session: "mypy" }
-          #          - { python-version: 3.7, os: ubuntu-latest, session: "mypy" }
-          - { python-version: "3.10", os: ubuntu-latest, session: "tests" }
-          - { python-version: 3.9, os: ubuntu-latest, session: "tests" }
-          - { python-version: 3.8, os: ubuntu-latest, session: "tests" }
-          - { python-version: 3.9, os: windows-latest, session: "tests" }
-          - { python-version: 3.9, os: macos-latest, session: "tests" }
-          - { python-version: 3.9, os: ubuntu-latest, session: "typeguard" }
-          - { python-version: 3.9, os: ubuntu-latest, session: "xdoctest" }
-          - { python-version: 3.8, os: ubuntu-latest, session: "docs-build" }
+          - { python-version: "3.13", os: ubuntu-latest, session: "pre-commit" }
+          - { python-version: "3.13", os: ubuntu-latest, session: "safety" }
+          - { python-version: "3.13", os: ubuntu-latest, session: "mypy" }
+          - { python-version: "3.14", os: ubuntu-latest, session: "tests" }
+          - { python-version: "3.13", os: ubuntu-latest, session: "tests" }
+          - { python-version: "3.12", os: ubuntu-latest, session: "tests" }
+          - { python-version: "3.13", os: windows-latest, session: "tests" }
+          - { python-version: "3.13", os: macos-latest, session: "tests" }
+          - { python-version: "3.13", os: ubuntu-latest, session: "typeguard" }
+          - { python-version: "3.13", os: ubuntu-latest, session: "xdoctest" }
+          - { python-version: "3.12", os: ubuntu-latest, session: "docs-build" }
 
     env:
       NOXSESSION: ${{ matrix.session }}
@@ -44,7 +42,7 @@ jobs:
 
       - name: Install Poetry
         run: |
-          pip install --constraint=.github/workflows/constraints.txt poetry
+          pip install --constraint=.github/workflows/constraints.txt poetry poetry-plugin-export
           poetry --version
 
       - name: Install Nox
@@ -68,7 +66,7 @@ jobs:
           print("::set-output name=result::{}".format(result))
 
       - name: Restore pre-commit cache
-        uses: actions/cache@v3.3.2
+        uses: actions/cache@v5
         if: matrix.session == 'pre-commit'
         with:
           path: ~/.cache/pre-commit
@@ -82,14 +80,14 @@ jobs:
 
       - name: Upload coverage data
         if: always() && matrix.session == 'tests'
-        uses: "actions/upload-artifact@v3"
+        uses: "actions/upload-artifact@v6"
         with:
           name: coverage-data
           path: ".coverage.*"
 
       - name: Upload documentation
         if: matrix.session == 'docs-build'
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v6
         with:
           name: docs
           path: docs/_build
@@ -101,10 +99,10 @@ jobs:
       - name: Check out the repository
         uses: actions/checkout@v3
 
-      - name: Set up Python 3.9
+      - name: Set up Python 3.13
         uses: actions/setup-python@v4
         with:
-          python-version: 3.9
+          python-version: 3.13
 
       - name: Upgrade pip
         run: |
@@ -113,7 +111,7 @@ jobs:
 
       - name: Install Poetry
         run: |
-          pip install --constraint=.github/workflows/constraints.txt poetry
+          pip install --constraint=.github/workflows/constraints.txt poetry poetry-plugin-export
           poetry --version
 
       - name: Install Nox
@@ -122,7 +120,7 @@ jobs:
           nox --version
 
       - name: Download coverage data
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v7
         with:
           name: coverage-data
 

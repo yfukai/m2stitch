@@ -1,4 +1,5 @@
 import itertools
+from typing import cast
 from typing import Tuple
 
 import numpy as np
@@ -100,8 +101,9 @@ def extract_overlap_subregion(image: NumArray, y: Int, x: Int) -> NumArray:
     subimage : np.ndarray
         the extracted subimage
     """
-    sizeY = image.shape[0]
-    sizeX = image.shape[1]
+    shape = cast(tuple[int, ...], image.shape)
+    sizeY = shape[0]
+    sizeX = shape[1]
     assert (np.abs(y) < sizeY) and (np.abs(x) < sizeX)
     # clip x to (0, size_Y)
     xstart = int(max(0, min(y, sizeY, key=int), key=int))
@@ -158,12 +160,13 @@ def interpret_translation(
     assert image1.ndim == 2
     assert image2.ndim == 2
     assert np.array_equal(image1.shape, image2.shape)
-    sizeY = image1.shape[0]
-    sizeX = image1.shape[1]
+    shape = cast(tuple[int, ...], image1.shape)
+    sizeY = shape[0]
+    sizeX = shape[1]
     assert np.all(0 <= yins) and np.all(yins < sizeY)
     assert np.all(0 <= xins) and np.all(xins < sizeX)
 
-    _ncc = -np.infty
+    _ncc = -np.inf
     y = 0
     x = 0
 

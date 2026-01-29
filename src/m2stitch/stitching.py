@@ -3,6 +3,7 @@ import itertools
 import warnings
 from dataclasses import dataclass
 from typing import Any
+from typing import cast
 from typing import Optional
 from typing import Sequence
 from typing import Tuple
@@ -26,6 +27,7 @@ from ._translation_computation import multi_peak_max
 from ._translation_computation import pcm
 from ._typing_utils import BoolArray
 from ._typing_utils import Float
+from ._typing_utils import IntArray
 from ._typing_utils import NumArray
 
 
@@ -104,7 +106,8 @@ def stitch_images(
     prop_dict : dict
         the dict of estimated parameters. (to be documented)
     """
-    images = np.array(images)
+    images = np.asarray(images)
+    images_shape = cast(tuple[int, ...], images.shape)
     assert (position_indices is not None) or (rows is not None and cols is not None)
     if position_indices is None:
         if row_col_transpose:
@@ -114,17 +117,23 @@ def stitch_images(
             position_indices = np.array([cols, rows]).T
         else:
             position_indices = np.array([rows, cols]).T
-    position_indices = np.array(position_indices)
-    assert images.shape[0] == position_indices.shape[0]
-    assert position_indices.shape[1] == images.ndim - 1
+    position_indices = np.asarray(position_indices)
+    pos_shape = cast(tuple[int, ...], position_indices.shape)
+    assert images_shape[0] == pos_shape[0]
+    assert pos_shape[1] == images.ndim - 1
     if position_initial_guess is not None:
-        position_initial_guess = np.array(position_initial_guess)
-        assert images.shape[0] == position_indices.shape[0]
-        assert position_initial_guess.shape[1] == images.ndim - 1
+        position_initial_guess = np.asarray(position_initial_guess)
+        init_shape = cast(tuple[int, ...], position_initial_guess.shape)
+        assert images_shape[0] == pos_shape[0]
+        assert init_shape[1] == images.ndim - 1
     assert 0 <= overlap_diff_threshold and overlap_diff_threshold <= 100
-    _rows, _cols = position_indices.T
+    pos_indices_T = np.asarray(position_indices.T)
+    pos_indices_T = cast(np.ndarray, pos_indices_T)
+    _rows = cast(IntArray, pos_indices_T[0])
+    _cols = cast(IntArray, pos_indices_T[1])
 
-    sizeY, sizeX = images.shape[1:]
+    sizeY = images_shape[1]
+    sizeX = images_shape[2]
 
     grid = pd.DataFrame(
         {

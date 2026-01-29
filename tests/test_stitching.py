@@ -1,5 +1,6 @@
 """Test cases for the __main__ module."""
 from os import path
+from typing import cast
 from typing import Tuple
 
 import numpy as np
@@ -14,7 +15,8 @@ from m2stitch import stitch_images
 def test_image_path(shared_datadir: str) -> Tuple[npt.NDArray, pd.DataFrame]:
     testimages = np.load(path.join(shared_datadir, "testimages.npy"))
     props = pd.read_csv(path.join(shared_datadir, "testimages_props.csv"), index_col=0)
-    assert np.array_equal(props.index, np.arange(testimages.shape[0]))
+    shape = cast(tuple[int, ...], testimages.shape)
+    assert np.array_equal(props.index, np.arange(shape[0]))
     return (testimages, props)
 
 
@@ -26,7 +28,8 @@ def test_image_path_mimuelle2212(
         np.load(path.join(shared_datadir, "images_mimuelle2212_2.npz"))["arr_0"]
     )
     props = pd.read_csv(path.join(shared_datadir, "images_mimuelle2212.csv"))
-    assert np.array_equal(props.index, np.arange(testimages.shape[0]))
+    shape = cast(tuple[int, ...], testimages.shape)
+    assert np.array_equal(props.index, np.arange(shape[0]))
     return (testimages, props)
 
 
@@ -89,8 +92,10 @@ def test_stitching_with_pos(test_image_path: Tuple[npt.NDArray, pd.DataFrame]) -
         [
             get_pos(poss[:, 0]),
             get_pos(poss[:, 1]),
-        ]
+        ],
+        dtype=np.int64,
     ).T
+    pos_indices = cast(npt.NDArray[np.int_], pos_indices)
     assert all(pos_indices[:, 0] == props["row"])
     assert all(pos_indices[:, 1] == props["col"])
     result_df, _ = stitch_images(
