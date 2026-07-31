@@ -108,15 +108,59 @@ def stitch_images(
     """
     images = np.asarray(images)
     images_shape = cast(tuple[int, ...], images.shape)
-    assert (position_indices is not None) or (rows is not None and cols is not None)
+    assert (
+        (position_indices is not None) 
+        or (rows is not None and cols is not None) 
+        or (position_initial_guess is not None)
+    ), "either position_indices or rows and cols or position_initial_guess must be provided"
     if position_indices is None:
-        if row_col_transpose:
-            warnings.warn(
-                "row_col_transpose is True. The default value will be changed to False in the major release."
-            )
-            position_indices = np.array([cols, rows]).T
+        if rows is not None and cols is not None:
+            if row_col_transpose:
+                warnings.warn(
+                    "row_col_transpose is True. The default value will be changed to False in the major release."
+                )
+                position_indices = np.array([cols, rows]).T
+            else:
+                position_indices = np.array([rows, cols]).T
         else:
-            position_indices = np.array([rows, cols]).T
+            position_initial_guess = np.asarray(position_initial_guess)
+
+            def get_pos(vals, grid_size):
+                indices = np.round(
+                    (np.array(vals) - np.min(vals)) / grid_size
+                ).astype(np.int64)
+                sorted_vals = np.sort(np.unique(indices))
+                d = dict(zip(sorted_vals, np.arange(len(sorted_vals))))
+                return list(map(d.get, indices))
+
+            steps = len(position_initial_guess) * 2  # assume reasonably spaced
+            pos_range = np.ptp(position_initial_guess)
+            grid_size = None
+            position_indices = None
+            for grid_size_x in np.linspace(pos_range / steps, pos_range, steps):
+                for grid_size_y in np.linspace(
+                    pos_range / steps, pos_range, steps
+                ):
+                    test_position_indices = np.stack(
+                        (
+                            get_pos(position_initial_guess[:, 0], grid_size_x),
+                            get_pos(position_initial_guess[:, 1], grid_size_y),
+                        ),
+                        axis=1,
+                    )
+                    num_unique = len(np.unique(test_position_indices, axis=0))
+                    if num_unique != position_initial_guess.shape[0]:
+                        break  # assume the problem is "convex"
+                    if grid_size is None or grid_size_x * grid_size_y > np.prod(
+                        grid_size
+                    ):  # find largest grid size that still works
+                        grid_size = (grid_size_x, grid_size_y)
+                        position_indices = test_position_indices
+            if position_indices is None:
+                raise ValueError(
+                    "Could not infer position_indices from position_initial_guess"
+                )
+            print(position_indices)
     position_indices = np.asarray(position_indices)
     pos_shape = cast(tuple[int, ...], position_indices.shape)
     assert images_shape[0] == pos_shape[0]
